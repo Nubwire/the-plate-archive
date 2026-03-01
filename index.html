@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Plate Archive Co.</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  
+  <!-- Google Fonts: Archive aesthetic -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          },
+          colors: {
+            archive: {
+              bg: '#fafafa',
+              text: '#1a1a1a',
+              accent: '#8c7b6b',
+              border: '#e5e5e5',
+              muted: '#6b7280'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body { @apply bg-archive-bg text-archive-text font-serif antialiased; }
+    .product-card { @apply bg-white border border-archive-border p-4 transition-all duration-200 hover:shadow-sm cursor-pointer; }
+    .btn { @apply px-4 py-2 border border-archive-accent text-archive-accent hover:bg-archive-accent hover:text-white transition-colors font-sans text-sm uppercase tracking-wide; }
+    .btn-primary { @apply bg-archive-accent text-white hover:bg-[#7a6a5a] border-transparent; }
+    .btn-sm { @apply px-2 py-1 text-xs; }
+    .input-field { @apply w-full border border-archive-border p-2 font-sans text-sm focus:outline-none focus:border-archive-accent; }
+    
+    /* Cart Tray */
+    #cart-tray { @apply fixed bottom-0 right-0 m-4 w-80 bg-white border border-archive-border shadow-lg z-50 max-h-[80vh] flex flex-col; }
+    .cart-item { @apply flex justify-between items-center py-2 border-b border-archive-border last:border-b-0; }
+    
+    /* Mode Toggle */
+    .mode-toggle { @apply fixed top-4 right-4 z-40 flex items-center space-x-2 bg-white border border-archive-border px-3 py-1.5 rounded-full shadow-sm font-sans text-xs; }
+    
+    /* Upload Zone */
+    .upload-zone { @apply border-2 border-dashed border-archive-border rounded-lg p-8 text-center hover:border-archive-accent transition-colors cursor-pointer; }
+    
+    /* Modal */
+    .modal-overlay { @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden; }
+    .modal { @apply bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-sm shadow-xl; }
+    .modal-header { @apply border-b border-archive-border p-4 flex justify-between items-start; }
+    .modal-body { @apply p-4 grid grid-cols-1 md:grid-cols-2 gap-6; }
+    .modal-image { @apply aspect-square bg-gray-50 rounded-sm overflow-hidden; }
+    .modal-details { @apply space-y-3; }
+    .meta-tag { @apply inline-block px-2 py-0.5 bg-gray-100 text-gray-700 text-xs font-sans rounded; }
+    
+    /* Utilities */
+    .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Product grid spacing */
+    #productGrid { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Mode Toggle -->
+  <div class="mode-toggle" id="modeToggle">
+    <span class="font-medium">Mode:</span>
+    <button id="adminBtn" class="font-bold text-archive-accent">Admin</button>
+    <span>/</span>
+    <button id="customerBtn" class="text-gray-500">Customer</button>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-archive-border py-6 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl md:text-3xl font-light tracking-tight">The Plate Archive Co.</h1>
+      <div id="headerActions">
+        <button id="toggleCartBtn" class="btn hidden">Selection Tray (<span id="cartCount">0</span>)</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl mx-auto px-4 md:px-8 py-8 w-full">
+    
+    <!-- Admin Mode: Upload Portal -->
+    <section id="adminView" class="fade-in">
+      <div class="max-w-2xl mx-auto text-center py-16">
+        <h2 class="text-xl font-light mb-2">Archive Initialization</h2>
+        <p class="text-gray-600 mb-8 font-sans text-sm">Upload your Stock Master CSV to populate the storefront. WooCommerce columns auto-mapped.</p>
+        
+        <div class="upload-zone" id="dropZone">
+          <input type="file" id="csvInput" accept=".csv,.xlsx,.xls" class="hidden" />
+          <div class="space-y-3">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <p class="text-sm text-gray-600 font-sans">
+              <label for="csvInput" class="font-medium text-archive-accent hover:underline cursor-pointer">Click to upload</label> or drag and drop
+            </p>
+            <p class="text-xs text-gray-500 font-sans">Supports WooCommerce export CSV • Columns auto-detected</p>
+          </div>
+        </div>
+        
+        <div id="uploadStatus" class="mt-6 text-sm font-sans hidden"></div>
+        
+        <!-- CSV Template Download -->
+        <div class="mt-8 pt-6 border-t border-archive-border">
+          <p class="text-xs text-gray-500 font-sans mb-3">Need a template?</p>
+          <button id="downloadTemplateBtn" class="btn btn-sm">Download Stock Master Template</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customer Mode: Product Gallery -->
+    <section id="customerView" class="hidden fade-in">
+      <!-- Search & Controls -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <input type="text" id="searchInput" placeholder="Search by name, pattern, SKU, era..." class="input-field md:w-80">
+        <div class="text-sm text-gray-500 font-sans">
+          <span id="productCount">0</span> items loaded
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div id="productGrid"></div>
+      
+      <!-- Empty State -->
+      <div id="emptyState" class="text-center py-16 hidden">
+        <p class="text-gray-500 font-sans">No items match your search.</p>
+        <p class="text-xs text-gray-400 mt-1">Try searching by pattern name, country, or era</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Selection Tray (Cart) -->
+  <div id="cart-tray" class="hidden">
+    <div class="p-4 border-b border-archive-border flex justify-between items-center bg-archive-bg">
+      <h3 class="font-medium">Selection Manifest</h3>
+      <button id="closeCartBtn" class="text-gray-500 hover:text-archive-text text-xl">&times;</button>
+    </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+    <div class="p-4 border-t border-archive-border bg-archive-bg">
+      <button id="exportBtn" class="btn btn-primary w-full">Export Manifest.txt</button>
+      <button id="clearCartBtn" class="btn w-full mt-2 text-xs">Clear Selection</button>
+    </div>
+  </div>
+
+  <!-- Product Detail Modal -->
+  <div id="productModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalTitle" class="text-xl font-medium"></h3>
+          <p id="modalSKU" class="text-sm text-gray-500 font-sans"></p>
+        </div>
+        <button id="closeModalBtn" class="text-gray-400 hover:text-archive-text text-2xl">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-image">
+          <img id="modalImage" src="" alt="" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300/fafafa/1a1a1a?text=Image+Unavailable'">
+        </div>
+        <div class="modal-details">
+          <div class="flex justify-between items-start">
+            <span id="modalPrice" class="text-lg font-medium"></span>
+            <span id="modalStock" class="text-xs font-sans px-2 py-1 rounded"></span>
+          </div>
+          
+          <p id="modalShortDesc" class="text-sm leading-relaxed"></p>
+          
+          <div class="space-y-2 pt-2">
+            <div class="flex flex-wrap gap-2" id="modalTags"></div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3 pt-3 text-sm font-sans">
+            <div><span class="text-gray-500">Pattern:</span> <span id="modalPattern" class="font-medium"></span></div>
+            <div><span class="text-gray-500">Era:</span> <span id="modalEra" class="font-medium"></span></div>
+            <div><span class="text-gray-500">Origin:</span> <span id="modalOrigin" class="font-medium"></span></div>
+            <div><span class="text-gray-500">Type:</span> <span id="modalType" class="font-medium"></span></div>
+            <div><span class="text-gray-500">Condition:</span> <span id="modalCondition" class="font-medium"></span></div>
+          </div>
+          
+          <div id="modalConditionNotes" class="text-xs text-gray-600 italic pt-2 border-t border-archive-border"></div>
+          
+          <div class="pt-4">
+            <button id="modalAddToCart" class="btn btn-primary w-full">Add to Selection</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-archive-border py-6 px-4 md:px-8 text-center text-sm text-gray-500 font-sans">
+    &copy; <span id="year"></span> The Plate Archive Co. — Private Archive
+  </footer>
+
+  <script>
+    // ==================== STATE ====================
+    const state = {
+      products: [],
+      cart: {},
+      mode: 'admin',
+      searchTerm: '',
+      currentModalProduct: null
+    };
+
+    // ==================== DOM ELEMENTS ====================
+    const els = {
+      adminView: document.getElementById('adminView'),
+      customerView: document.getElementById('customerView'),
+      csvInput: document.getElementById('csvInput'),
+      dropZone: document.getElementById('dropZone'),
+      uploadStatus: document.getElementById('uploadStatus'),
+      productGrid: document.getElementById('productGrid'),
+      searchInput: document.getElementById('searchInput'),
+      productCount: document.getElementById('productCount'),
+      emptyState: document.getElementById('emptyState'),
+      cartTray: document.getElementById('cart-tray'),
+      cartItems: document.getElementById('cartItems'),
+      cartCount: document.getElementById('cartCount'),
+      toggleCartBtn: document.getElementById('toggleCartBtn'),
+      closeCartBtn: document.getElementById('closeCartBtn'),
+      exportBtn: document.getElementById('exportBtn'),
+      clearCartBtn: document.getElementById('clearCartBtn'),
+      adminBtn: document.getElementById('adminBtn'),
+      customerBtn: document.getElementById('customerBtn'),
+      productModal: document.getElementById('productModal'),
+      modalTitle: document.getElementById('modalTitle'),
+      modalSKU: document.getElementById('modalSKU'),
+      modalImage: document.getElementById('modalImage'),
+      modalPrice: document.getElementById('modalPrice'),
+      modalStock: document.getElementById('modalStock'),
+      modalShortDesc: document.getElementById('modalShortDesc'),
+      modalTags: document.getElementById('modalTags'),
+      modalPattern: document.getElementById('modalPattern'),
+      modalEra: document.getElementById('modalEra'),
+      modalOrigin: document.getElementById('modalOrigin'),
+      modalType: document.getElementById('modalType'),
+      modalCondition: document.getElementById('modalCondition'),
+      modalConditionNotes: document.getElementById('modalConditionNotes'),
+      modalAddToCart: document.getElementById('modalAddToCart'),
+      closeModalBtn: document.getElementById('closeModalBtn'),
+      downloadTemplateBtn: document.getElementById('downloadTemplateBtn'),
+      year: document.getElementById('year')
+    };
+
+    els.year.textContent = new Date().getFullYear();
+
+    // ==================== ENHANCED COLUMN MAPPING (WooCommerce + Stock Master) ====================
+    const COLUMN_MAP = {
+      name: ['name', 'title', 'item'],
+      sku: ['sku', 'id', 'reference'],
+      price: ['price', 'value', 'cost', 'regular price (usd)', 'regular price'],
+      image: ['images', 'image', 'url', 'wordpress media url 1', 'wordpress media url1'],
+      stock: ['stock', 'qty', 'inventory', 'stock qty'],
+      // Rich metadata fields (optional display)
+      shortDesc: ['short description', 'shortdesc', 'excerpt'],
+      description: ['description', 'full description'],
+      pattern: ['pattern name', 'pattern'],
+      era: ['era / year made', 'era', 'year made', 'date'],
+      origin: ['country of origin', 'origin', 'country'],
+      pieceType: ['piece type', 'type'],
+      condition: ['condition'],
+      conditionNotes: ['condition notes', 'notes'],
+      tags: ['tags'],
+      // Multi-image columns for merging
+      wpImage1: ['wordpress media url 1', 'wp media url 1', 'image url 1'],
+      wpImage2: ['wordpress media url 2', 'wp media url 2', 'image url 2'],
+      wpImage3: ['wordpress media url 3', 'wp media url 3', 'image url 3']
+    };
+
+    function findColumn(headers, variations) {
+      const lowerHeaders = headers.map(h => h?.toLowerCase().trim() || '');
+      for (const variation of variations) {
+        const idx = lowerHeaders.indexOf(variation.toLowerCase());
+        if (idx !== -1) return headers[idx];
+      }
+      return null;
+    }
+
+    // ==================== IMAGE PROCESSING ====================
+    function processImageUrl(url) {
+      if (!url || typeof url !== 'string') return 'https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image';
+      let imageUrl = url.split(',')[0].trim();
+      const driveMatch = imageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (driveMatch && driveMatch[1]) {
+        return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w800`;
+      }
+      if (imageUrl.startsWith('http')) return imageUrl;
+      return 'https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image';
+    }
+
+    function mergeWordPressImages(row, headers) {
+      const urls = [];
+      [COLUMN_MAP.wpImage1, COLUMN_MAP.wpImage2, COLUMN_MAP.wpImage3].forEach(variations => {
+        const col = findColumn(headers, variations);
+        if (col && row[col]?.toString().trim()) {
+          urls.push(row[col].trim());
+        }
+      });
+      // Also check main image column
+      const mainCol = findColumn(headers, COLUMN_MAP.image);
+      if (mainCol && row[mainCol]?.toString().trim()) {
+        // Prepend main column URLs if not already included
+        row[mainCol].split(',').forEach(u => {
+          const trimmed = u.trim();
+          if (trimmed && !urls.includes(trimmed)) urls.unshift(trimmed);
+        });
+      }
+      return urls.filter(u => u).join(', ');
+    }
+
+    // ==================== CSV PARSING ====================
+    function parseCSV(csvText) {
+      return new Promise((resolve, reject) => {
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: header => header?.trim() || '',
+          complete: (results) => {
+            if (results.errors.length) console.warn('CSV parse warnings:', results.errors);
+            resolve(results.data.filter(row => row && Object.keys(row).length > 1 && row['SKU']));
+          },
+          error: reject
+        });
+      });
+    }
+
+    function normalizeProduct(row, headers) {
+      const nameCol = findColumn(headers, COLUMN_MAP.name);
+      const skuCol = findColumn(headers, COLUMN_MAP.sku);
+      if (!nameCol || !skuCol) return null;
+
+      const priceCol = findColumn(headers, COLUMN_MAP.price);
+      const stockCol = findColumn(headers, COLUMN_MAP.stock);
+      const rawPrice = row[priceCol] || '0';
+      const price = parseFloat(rawPrice.toString().replace(/[^0-9.]/g, '')) || 0;
+      const rawStock = row[stockCol] || '0';
+      const stock = parseInt(rawStock.toString().replace(/[^0-9]/g, '')) || 0;
+
+      // Merge WordPress image columns
+      const mergedImages = mergeWordPressImages(row, headers);
+      const imageCol = mergedImages || row[findColumn(headers, COLUMN_MAP.image)];
+
+      return {
+        name: row[nameCol]?.toString().trim() || 'Untitled',
+        sku: row[skuCol]?.toString().trim() || `SKU-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+        price: price,
+        priceFormatted: price > 0 ? `$${price.toFixed(2)}` : 'Contact',
+        image: processImageUrl(imageCol),
+        images: mergedImages.split(',').map(processImageUrl).filter(u => u),
+        stock: stock,
+        inStock: stock > 0,
+        // Rich metadata
+        shortDesc: row[findColumn(headers, COLUMN_MAP.shortDesc)]?.toString().trim() || '',
+        pattern: row[findColumn(headers, COLUMN_MAP.pattern)]?.toString().trim() || '',
+        era: row[findColumn(headers, COLUMN_MAP.era)]?.toString().trim() || '',
+        origin: row[findColumn(headers, COLUMN_MAP.origin)]?.toString().trim() || '',
+        pieceType: row[findColumn(headers, COLUMN_MAP.pieceType)]?.toString().trim() || '',
+        condition: row[findColumn(headers, COLUMN_MAP.condition)]?.toString().trim() || '',
+        conditionNotes: row[findColumn(headers, COLUMN_MAP.conditionNotes)]?.toString().trim() || '',
+        tags: (row[findColumn(headers, COLUMN_MAP.tags)]?.toString() || '').split(',').map(t => t.trim()).filter(t => t)
+      };
+    }
+
+    // ==================== FILE UPLOAD HANDLING ====================
+    async function handleFileUpload(file) {
+      showStatus('Reading file...', 'text-gray-600');
+      
+      try {
+        const text = await file.text();
+        const rawData = await parseCSV(text);
+        
+        if (!rawData.length) throw new Error('No valid rows found');
+        
+        const headers = Object.keys(rawData[0]);
+        const products = rawData
+          .map(row => normalizeProduct(row, headers))
+          .filter(p => p !== null && p.name && p.sku);
+        
+        if (!products.length) throw new Error('Could not map required columns (Name, SKU)');
+        
+        state.products = products;
+        showStatus(`✓ Successfully loaded ${products.length} items. Switch to Customer Mode to view.`, 'text-green-700');
+        
+        setTimeout(() => {
+          if (products.length > 0 && confirm(`Loaded ${products.length} items. Switch to Customer Mode to preview?`)) {
+            setMode('customer');
+          }
+        }, 800);
+        
+      } catch (err) {
+        console.error('Upload error:', err);
+        showStatus(`✗ Error: ${err.message}`, 'text-red-600');
+      }
+    }
+
+    function showStatus(message, className) {
+      els.uploadStatus.textContent = message;
+      els.uploadStatus.className = `mt-6 text-sm font-sans ${className}`;
+      els.uploadStatus.classList.remove('hidden');
+    }
+
+    // ==================== RENDER FUNCTIONS ====================
+    function renderGrid() {
+      const term = state.searchTerm.toLowerCase();
+      const filtered = state.products.filter(p => 
+        p.name.toLowerCase().includes(term) ||
+        p.sku.toLowerCase().includes(term) ||
+        p.pattern?.toLowerCase().includes(term) ||
+        p.era?.toLowerCase().includes(term) ||
+        p.origin?.toLowerCase().includes(term) ||
+        p.tags?.some(t => t.toLowerCase().includes(term))
+      );
+
+      els.productCount.textContent = filtered.length;
+      els.emptyState.classList.toggle('hidden', filtered.length > 0);
+      
+      if (filtered.length === 0) {
+        els.productGrid.innerHTML = '';
+        return;
+      }
+
+      els.productGrid.innerHTML = filtered.map(product => {
+        const inCart = state.cart[product.sku];
+        const qty = inCart ? inCart.quantity : 0;
+        const conditionClass = {
+          'Mint': 'text-green-700', 'Excellent': 'text-green-600', 
+          'Good': 'text-yellow-600', 'Fair': 'text-orange-600',
+          'Poor': 'text-red-600', 'For Parts': 'text-red-700'
+        }[product.condition] || 'text-gray-500';
+        
+        return `
+          <div class="product-card fade-in" data-sku="${product.sku}" onclick="openProductModal('${product.sku}')">
+            <div class="aspect-square bg-gray-50 mb-3 overflow-hidden rounded-sm relative group">
+              <img 
+                src="${product.image}" 
+                alt="${product.name}"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                onerror="this.src='https://via.placeholder.com/400x300/fafafa/1a1a1a?text=Image+Unavailable'"
+              >
+              ${product.condition ? `<span class="absolute top-2 right-2 text-xs font-sans px-1.5 py-0.5 bg-white/90 rounded ${conditionClass}">${product.condition}</span>` : ''}
+            </div>
+            <h3 class="font-medium text-lg mb-0.5 leading-tight line-clamp-2">${product.name}</h3>
+            ${product.pattern ? `<p class="text-sm text-archive-accent mb-1">${product.pattern}</p>` : ''}
+            <p class="text-xs text-gray-500 font-sans mb-2">SKU: ${product.sku}${product.era ? ` • ${product.era}` : ''}</p>
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-medium">${product.priceFormatted}</span>
+              <span class="text-xs font-sans ${product.inStock ? 'text-green-700' : 'text-red-600'}">
+                ${product.inStock ? `(${product.stock})` : 'Out'}
+              </span>
+            </div>
+            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+              <button 
+                class="btn flex-1 ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}"
+                onclick="addToCart('${product.sku}'); event.stopPropagation();"
+                ${!product.inStock ? 'disabled' : ''}
+              >
+                ${qty > 0 ? `Add More (${qty})` : 'Select'}
+              </button>
+              ${qty > 0 ? `<button class="px-2 py-1 text-xs border border-red-300 text-red-600 hover:bg-red-50" onclick="removeFromCart('${product.sku}'); event.stopPropagation();">×</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCart() {
+      const items = Object.values(state.cart);
+      els.cartCount.textContent = items.reduce((sum, item) => sum + item.quantity, 0);
+      
+      if (items.length === 0) {
+        els.cartItems.innerHTML = '<p class="text-center text-gray-500 py-4 font-sans text-sm">No items selected</p>';
+        return;
+      }
+
+      els.cartItems.innerHTML = items.map(item => `
+        <div class="cart-item">
+          <div class="flex-1 min-w-0 pr-2">
+            <p class="font-medium truncate text-sm">${item.product.name}</p>
+            <p class="text-xs text-gray-500 font-sans">${item.product.sku} • ${item.product.priceFormatted}</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button class="w-5 h-5 flex items-center justify-center border border-archive-border text-xs hover:bg-gray-50 rounded" onclick="updateCartQty('${item.product.sku}', -1)">−</button>
+            <span class="w-5 text-center text-xs font-sans font-medium">${item.quantity}</span>
+            <button class="w-5 h-5 flex items-center justify-center border border-archive-border text-xs hover:bg-gray-50 rounded" onclick="updateCartQty('${item.product.sku}', 1)">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==================== MODAL FUNCTIONS ====================
+    function openProductModal(sku) {
+      const product = state.products.find(p => p.sku === sku);
+      if (!product) return;
+      
+      state.currentModalProduct = sku;
+      els.modalTitle.textContent = product.name;
+      els.modalSKU.textContent = `SKU: ${product.sku}`;
+      els.modalImage.src = product.image;
+      els.modalPrice.textContent = product.priceFormatted;
+      els.modalStock.textContent = product.inStock ? `In Stock (${product.stock})` : 'Out of Stock';
+      els.modalStock.className = `text-xs font-sans px-2 py-1 rounded ${product.inStock ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`;
+      els.modalShortDesc.textContent = product.shortDesc || product.description?.replace(/<[^>]*>/g, '').slice(0, 160) + '...' || '';
+      
+      // Tags
+      els.modalTags.innerHTML = product.tags?.slice(0, 5).map(tag => 
+        `<span class="meta-tag">${tag}</span>`
+      ).join('') || '<span class="text-xs text-gray-400">No tags</span>';
+      
+      // Metadata
+      els.modalPattern.textContent = product.pattern || '—';
+      els.modalEra.textContent = product.era || '—';
+      els.modalOrigin.textContent = product.origin || '—';
+      els.modalType.textContent = product.pieceType || '—';
+      els.modalCondition.textContent = product.condition || '—';
+      els.modalConditionNotes.textContent = product.conditionNotes || '';
+      els.modalConditionNotes.classList.toggle('hidden', !product.conditionNotes);
+      
+      // Add to cart button state
+      els.modalAddToCart.disabled = !product.inStock;
+      els.modalAddToCart.classList.toggle('opacity-50', !product.inStock);
+      els.modalAddToCart.classList.toggle('cursor-not-allowed', !product.inStock);
+      
+      els.productModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductModal() {
+      els.productModal.classList.add('hidden');
+      document.body.style.overflow = '';
+      state.currentModalProduct = null;
+    }
+
+    // ==================== CART FUNCTIONS ====================
+    function addToCart(sku) {
+      const product = state.products.find(p => p.sku === sku);
+      if (!product || !product.inStock) return;
+      
+      if (!state.cart[sku]) state.cart[sku] = { product, quantity: 0 };
+      const maxAdd = product.stock - state.cart[sku].quantity;
+      if (maxAdd <= 0) { alert('Maximum stock reached'); return; }
+      
+      state.cart[sku].quantity += 1;
+      renderCart();
+      renderGrid();
+      showCart();
+    }
+
+    function removeFromCart(sku) {
+      delete state.cart[sku];
+      renderCart();
+      renderGrid();
+    }
+
+    function updateCartQty(sku, delta) {
+      if (!state.cart[sku]) return;
+      const product = state.cart[sku].product;
+      const newQty = state.cart[sku].quantity + delta;
+      
+      if (newQty <= 0) { removeFromCart(sku); return; }
+      if (newQty > product.stock) { alert(`Only ${product.stock} available`); return; }
+      
+      state.cart[sku].quantity = newQty;
+      renderCart();
+      renderGrid();
+    }
+
+    function showCart() { els.cartTray.classList.remove('hidden'); }
+    function hideCart() { els.cartTray.classList.add('hidden'); }
+    function clearCart() {
+      if (!Object.keys(state.cart).length) return;
+      if (confirm('Clear all selected items?')) {
+        state.cart = {};
+        renderCart();
+        renderGrid();
+      }
+    }
+
+    // ==================== EXPORT MANIFEST ====================
+    function exportManifest() {
+      const items = Object.values(state.cart);
+      if (!items.length) { alert('No items selected'); return; }
+
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      let content = `THE PLATE ARCHIVE CO. — SELECTION MANIFEST\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
+      
+      let total = 0;
+      items.forEach(item => {
+        const lineTotal = item.product.price * item.quantity;
+        total += lineTotal;
+        content += `SKU: ${item.product.sku}\nItem: ${item.product.name}\n`;
+        if (item.product.pattern) content += `Pattern: ${item.product.pattern}\n`;
+        if (item.product.era) content += `Era: ${item.product.era}\n`;
+        content += `Qty: ${item.quantity}\nPrice: ${item.product.priceFormatted}\nSubtotal: $${lineTotal.toFixed(2)}\n`;
+        content += `${'-'.repeat(40)}\n`;
+      });
+      
+      content += `\nGRAND TOTAL: $${total.toFixed(2)}\nTotal Items: ${items.reduce((s,i)=>s+i.quantity,0)}\n\nThank you for your inquiry.\nThe Plate Archive Co.`;
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `PlateArchive_Manifest_${timestamp}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ==================== MODE MANAGEMENT ====================
+    function setMode(mode) {
+      state.mode = mode;
+      if (mode === 'admin') {
+        els.adminView.classList.remove('hidden');
+        els.customerView.classList.add('hidden');
+        els.toggleCartBtn.classList.add('hidden');
+        els.adminBtn.classList.add('font-bold', 'text-archive-accent');
+        els.adminBtn.classList.remove('text-gray-500');
+        els.customerBtn.classList.remove('font-bold', 'text-archive-accent');
+        els.customerBtn.classList.add('text-gray-500');
+      } else {
+        if (!state.products.length) { alert('Upload a CSV first in Admin Mode.'); setMode('admin'); return; }
+        els.adminView.classList.add('hidden');
+        els.customerView.classList.remove('hidden');
+        els.toggleCartBtn.classList.remove('hidden');
+        els.customerBtn.classList.add('font-bold', 'text-archive-accent');
+        els.customerBtn.classList.remove('text-gray-500');
+        els.adminBtn.classList.remove('font-bold', 'text-archive-accent');
+        els.adminBtn.classList.add('text-gray-500');
+        renderGrid();
+        renderCart();
+      }
+    }
+
+    // ==================== CSV TEMPLATE GENERATOR ====================
+    function downloadTemplate() {
+      const headers = [
+        'SKU','Name','Short Description','Description','Regular Price (USD)',
+        'Stock Qty','Categories','Tags','Images','Pattern Name','Era / Year Made',
+        'Country of Origin','Piece Type','Condition','Condition Notes',
+        'WordPress Media URL 1','WordPress Media URL 2','WordPress Media URL 3'
+      ];
+      const sampleRow = [
+        'RD-OC-DP-001','Royal Doulton Old Colony Dinner Plate',
+        'Royal Doulton Old Colony 10.5" dinner plate. Floral border with gilt trim. England, 1962–1988.',
+        '<p>Royal Doulton <strong>Old Colony</strong> pattern dinner plate...</p>',
+        '38.00','1','China > Dinner Plates','china, royal-doulton, vintage',
+        'https://yoursite.com/image1.jpg, https://yoursite.com/image2.jpg',
+        'Old Colony','1962–1988','England','Dinner Plate','Excellent',
+        'No chips, cracks or crazing. Light use only.',
+        '','',''
+      ];
+      
+      const csv = [headers.join(','), sampleRow.map(v => `"${v.replace(/"/g, '""')}"`).join(',')].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'PlateArchive_StockMaster_Template.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    function initEvents() {
+      els.csvInput.addEventListener('change', e => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); });
+      els.dropZone.addEventListener('click', () => els.csvInput.click());
+      
+      ['dragenter','dragover','dragleave','drop'].forEach(ev => {
+        els.dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); });
+      });
+      ['dragenter','dragover'].forEach(ev => {
+        els.dropZone.addEventListener(ev, () => els.dropZone.classList.add('border-archive-accent','bg-gray-50'));
+      });
+      ['dragleave','drop'].forEach(ev => {
+        els.dropZone.addEventListener(ev, () => els.dropZone.classList.remove('border-archive-accent','bg-gray-50'));
+      });
+      els.dropZone.addEventListener('drop', e => {
+        const file = e.dataTransfer.files[0];
+        if (file && file.name.toLowerCase().endsWith('.csv')) handleFileUpload(file);
+        else showStatus('✗ Please upload a valid CSV file', 'text-red-600');
+      });
+      
+      els.searchInput.addEventListener('input', e => { state.searchTerm = e.target.value.trim(); renderGrid(); });
+      els.toggleCartBtn.addEventListener('click', showCart);
+      els.closeCartBtn.addEventListener('click', hideCart);
+      els.exportBtn.addEventListener('click', exportManifest);
+      els.clearCartBtn.addEventListener('click', clearCart);
+      els.adminBtn.addEventListener('click', () => setMode('admin'));
+      els.customerBtn.addEventListener('click', () => setMode('customer'));
+      els.closeModalBtn.addEventListener('click', closeProductModal);
+      els.modalAddToCart.addEventListener('click', () => {
+        if (state.currentModalProduct) {
+          addToCart(state.currentModalProduct);
+          closeProductModal();
+        }
+      });
+      els.downloadTemplateBtn.addEventListener('click', downloadTemplate);
+      
+      // Close modal on overlay click
+      els.productModal.addEventListener('click', e => { if (e.target === els.productModal) closeProductModal(); });
+      
+      // Keyboard shortcuts
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { hideCart(); closeProductModal(); }
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); els.searchInput.focus(); }
+      });
+      
+      // Close cart when clicking outside on mobile
+      document.addEventListener('click', e => {
+        if (window.innerWidth < 768 && !els.cartTray.contains(e.target) && e.target !== els.toggleCartBtn && !els.toggleCartBtn.contains(e.target)) hideCart();
+      });
+    }
+
+    // ==================== INIT ====================
+    function init() {
+      initEvents();
+      setMode('admin');
+      console.log('✓ The Plate Archive Co. Storefront initialized');
+      console.log('  - WooCommerce + Stock Master CSV mapping enabled');
+      console.log('  - Rich product metadata modal support');
+      console.log('  - Performance: Vanilla JS, optimized for 500+ items');
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+
+    // Global functions for inline handlers
+    window.addToCart = addToCart;
+    window.removeFromCart = removeFromCart;
+    window.updateCartQty = updateCartQty;
+    window.openProductModal = openProductModal;
+  </script>
+</body>
+</html>
