@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>The Plate Archive Co.</title>
-  
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- PapaParse for CSV parsing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  
   <script>
     tailwind.config = {
       theme: {
@@ -27,43 +23,32 @@
               bg: '#fafafa',
               text: '#1a1a1a',
               accent: '#8c7b6b',
-              border: '#e5e5e5',
-              muted: '#6b7280'
+              border: '#e5e5e5'
             }
           }
         }
       }
     }
   </script>
-  
   <style>
     body { @apply bg-archive-bg text-archive-text font-serif antialiased; }
     .product-card { @apply bg-white border border-archive-border p-4 transition-all duration-200 hover:shadow-sm cursor-pointer; }
     .btn { @apply px-4 py-2 border border-archive-accent text-archive-accent hover:bg-archive-accent hover:text-white transition-colors font-sans text-sm uppercase tracking-wide; }
     .btn-primary { @apply bg-archive-accent text-white hover:bg-[#7a6a5a] border-transparent; }
-    .btn-sm { @apply px-2 py-1 text-xs; }
     .input-field { @apply w-full border border-archive-border p-2 font-sans text-sm focus:outline-none focus:border-archive-accent; }
     #cart-tray { @apply fixed bottom-0 right-0 m-4 w-80 bg-white border border-archive-border shadow-lg z-50 max-h-[80vh] flex flex-col; }
-    .cart-item { @apply flex justify-between items-center py-2 border-b border-archive-border last:border-b-0; }
     .mode-toggle { @apply fixed top-4 right-4 z-40 flex items-center space-x-2 bg-white border border-archive-border px-3 py-1.5 rounded-full shadow-sm font-sans text-xs; }
     .upload-zone { @apply border-2 border-dashed border-archive-border rounded-lg p-8 text-center hover:border-archive-accent transition-colors cursor-pointer; }
-    .modal-overlay { @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden; }
-    .modal { @apply bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-sm shadow-xl; }
-    .modal-header { @apply border-b border-archive-border p-4 flex justify-between items-start; }
-    .modal-body { @apply p-4 grid grid-cols-1 md:grid-cols-2 gap-6; }
-    .modal-image { @apply aspect-square bg-gray-50 rounded-sm overflow-hidden; }
-    .modal-details { @apply space-y-3; }
-    .meta-tag { @apply inline-block px-2 py-0.5 bg-gray-100 text-gray-700 text-xs font-sans rounded; }
     .hidden { display: none !important; }
     .fade-in { animation: fadeIn 0.3s ease-in; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     #productGrid { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- Mode Toggle -->
-  <div class="mode-toggle" id="modeToggle">
+  <div class="mode-toggle">
     <span class="font-medium">Mode:</span>
     <button id="adminBtn" class="font-bold text-archive-accent">Admin</button>
     <span>/</span>
@@ -74,20 +59,18 @@
   <header class="border-b border-archive-border py-6 px-4 md:px-8">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
       <h1 class="text-2xl md:text-3xl font-light tracking-tight">The Plate Archive Co.</h1>
-      <div id="headerActions">
-        <button id="toggleCartBtn" class="btn hidden">Selection Tray (<span id="cartCount">0</span>)</button>
-      </div>
+      <button id="toggleCartBtn" class="btn hidden">Selection (<span id="cartCount">0</span>)</button>
     </div>
   </header>
 
   <!-- Main Content -->
   <main class="flex-1 max-w-7xl mx-auto px-4 md:px-8 py-8 w-full">
     
-    <!-- Admin Mode: Upload Portal -->
-    <section id="adminView" class="fade-in">
+    <!-- Admin Mode -->
+    <section id="adminView">
       <div class="max-w-2xl mx-auto text-center py-16">
         <h2 class="text-xl font-light mb-2">Archive Initialization</h2>
-        <p class="text-gray-600 mb-8 font-sans text-sm">Upload your Stock Master CSV to populate the storefront. WooCommerce columns auto-mapped.</p>
+        <p class="text-gray-600 mb-8 font-sans text-sm">Upload your Stock Master CSV to populate the storefront.</p>
         
         <div class="upload-zone" id="dropZone">
           <input type="file" id="csvInput" accept=".csv" class="hidden" />
@@ -98,170 +81,74 @@
             <p class="text-sm text-gray-600 font-sans">
               <label for="csvInput" class="font-medium text-archive-accent hover:underline cursor-pointer">Click to upload</label> or drag and drop
             </p>
-            <p class="text-xs text-gray-500 font-sans">Supports WooCommerce export CSV • Documentation rows auto-skipped</p>
+            <p class="text-xs text-gray-500 font-sans">Supports WooCommerce CSV • Auto-detects columns</p>
           </div>
         </div>
         
         <div id="uploadStatus" class="mt-6 text-sm font-sans hidden"></div>
-        
-        <div class="mt-8 pt-6 border-t border-archive-border">
-          <p class="text-xs text-gray-500 font-sans mb-3">Need a template?</p>
-          <button id="downloadTemplateBtn" class="btn btn-sm">Download Stock Master Template</button>
-        </div>
+        <div id="debugInfo" class="mt-4 text-xs text-gray-400 font-sans hidden"></div>
       </div>
     </section>
 
-    <!-- Customer Mode: Product Gallery -->
-    <section id="customerView" class="hidden fade-in">
+    <!-- Customer Mode -->
+    <section id="customerView" class="hidden">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-        <input type="text" id="searchInput" placeholder="Search by name, pattern, SKU, era..." class="input-field md:w-80">
-        <div class="text-sm text-gray-500 font-sans">
-          <span id="productCount">0</span> items loaded
-        </div>
+        <input type="text" id="searchInput" placeholder="Search by name, pattern, SKU..." class="input-field md:w-80">
+        <div class="text-sm text-gray-500 font-sans"><span id="productCount">0</span> items loaded</div>
       </div>
       <div id="productGrid"></div>
       <div id="emptyState" class="text-center py-16 hidden">
         <p class="text-gray-500 font-sans">No items match your search.</p>
-        <p class="text-xs text-gray-400 mt-1">Try searching by pattern name, country, or era</p>
       </div>
     </section>
 
   </main>
 
-  <!-- Selection Tray (Cart) -->
+  <!-- Cart Tray -->
   <div id="cart-tray" class="hidden">
     <div class="p-4 border-b border-archive-border flex justify-between items-center bg-archive-bg">
       <h3 class="font-medium">Selection Manifest</h3>
-      <button id="closeCartBtn" class="text-gray-500 hover:text-archive-text text-xl">&times;</button>
+      <button id="closeCartBtn" class="text-gray-500 text-xl">&times;</button>
     </div>
     <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
     <div class="p-4 border-t border-archive-border bg-archive-bg">
       <button id="exportBtn" class="btn btn-primary w-full">Export Manifest.txt</button>
-      <button id="clearCartBtn" class="btn w-full mt-2 text-xs">Clear Selection</button>
-    </div>
-  </div>
-
-  <!-- Product Detail Modal -->
-  <div id="productModal" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div>
-          <h3 id="modalTitle" class="text-xl font-medium"></h3>
-          <p id="modalSKU" class="text-sm text-gray-500 font-sans"></p>
-        </div>
-        <button id="closeModalBtn" class="text-gray-400 hover:text-archive-text text-2xl">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="modal-image">
-          <img id="modalImage" src="" alt="" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300/fafafa/1a1a1a?text=Image+Unavailable'">
-        </div>
-        <div class="modal-details">
-          <div class="flex justify-between items-start">
-            <span id="modalPrice" class="text-lg font-medium"></span>
-            <span id="modalStock" class="text-xs font-sans px-2 py-1 rounded"></span>
-          </div>
-          <p id="modalShortDesc" class="text-sm leading-relaxed"></p>
-          <div class="space-y-2 pt-2">
-            <div class="flex flex-wrap gap-2" id="modalTags"></div>
-          </div>
-          <div class="grid grid-cols-2 gap-3 pt-3 text-sm font-sans">
-            <div><span class="text-gray-500">Pattern:</span> <span id="modalPattern" class="font-medium"></span></div>
-            <div><span class="text-gray-500">Era:</span> <span id="modalEra" class="font-medium"></span></div>
-            <div><span class="text-gray-500">Origin:</span> <span id="modalOrigin" class="font-medium"></span></div>
-            <div><span class="text-gray-500">Type:</span> <span id="modalType" class="font-medium"></span></div>
-            <div><span class="text-gray-500">Condition:</span> <span id="modalCondition" class="font-medium"></span></div>
-          </div>
-          <div id="modalConditionNotes" class="text-xs text-gray-600 italic pt-2 border-t border-archive-border"></div>
-          <div class="pt-4">
-            <button id="modalAddToCart" class="btn btn-primary w-full">Add to Selection</button>
-          </div>
-        </div>
-      </div>
+      <button id="clearCartBtn" class="btn w-full mt-2 text-xs">Clear</button>
     </div>
   </div>
 
   <!-- Footer -->
   <footer class="border-t border-archive-border py-6 px-4 md:px-8 text-center text-sm text-gray-500 font-sans">
-    &copy; <span id="year"></span> The Plate Archive Co. — Private Archive
+    &copy; <span id="year"></span> The Plate Archive Co.
   </footer>
 
+  <!-- Scripts at Bottom for Reliable Loading -->
   <script>
     // ==================== STATE ====================
-    const state = {
-      products: [],
-      cart: {},
-      mode: 'admin',
-      searchTerm: '',
-      currentModalProduct: null
-    };
+    const state = { products: [], cart: {}, mode: 'admin', searchTerm: '' };
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ==================== DOM ELEMENTS ====================
-    const els = {
-      adminView: document.getElementById('adminView'),
-      customerView: document.getElementById('customerView'),
-      csvInput: document.getElementById('csvInput'),
-      dropZone: document.getElementById('dropZone'),
-      uploadStatus: document.getElementById('uploadStatus'),
-      productGrid: document.getElementById('productGrid'),
-      searchInput: document.getElementById('searchInput'),
-      productCount: document.getElementById('productCount'),
-      emptyState: document.getElementById('emptyState'),
-      cartTray: document.getElementById('cart-tray'),
-      cartItems: document.getElementById('cartItems'),
-      cartCount: document.getElementById('cartCount'),
-      toggleCartBtn: document.getElementById('toggleCartBtn'),
-      closeCartBtn: document.getElementById('closeCartBtn'),
-      exportBtn: document.getElementById('exportBtn'),
-      clearCartBtn: document.getElementById('clearCartBtn'),
-      adminBtn: document.getElementById('adminBtn'),
-      customerBtn: document.getElementById('customerBtn'),
-      productModal: document.getElementById('productModal'),
-      modalTitle: document.getElementById('modalTitle'),
-      modalSKU: document.getElementById('modalSKU'),
-      modalImage: document.getElementById('modalImage'),
-      modalPrice: document.getElementById('modalPrice'),
-      modalStock: document.getElementById('modalStock'),
-      modalShortDesc: document.getElementById('modalShortDesc'),
-      modalTags: document.getElementById('modalTags'),
-      modalPattern: document.getElementById('modalPattern'),
-      modalEra: document.getElementById('modalEra'),
-      modalOrigin: document.getElementById('modalOrigin'),
-      modalType: document.getElementById('modalType'),
-      modalCondition: document.getElementById('modalCondition'),
-      modalConditionNotes: document.getElementById('modalConditionNotes'),
-      modalAddToCart: document.getElementById('modalAddToCart'),
-      closeModalBtn: document.getElementById('closeModalBtn'),
-      downloadTemplateBtn: document.getElementById('downloadTemplateBtn'),
-      year: document.getElementById('year')
-    };
-
-    els.year.textContent = new Date().getFullYear();
-
-    // ==================== COLUMN MAPPING (WooCommerce + Stock Master) ====================
+    // ==================== COLUMN MAPPING ====================
     const COLUMN_MAP = {
       name: ['name', 'title', 'item'],
       sku: ['sku', 'id', 'reference'],
       price: ['price', 'value', 'cost', 'regular price (usd)', 'regular price'],
-      image: ['images', 'image', 'url', 'wordpress media url 1', 'wordpress media url1'],
+      image: ['images', 'image', 'url', 'wordpress media url 1'],
       stock: ['stock', 'qty', 'inventory', 'stock qty'],
-      shortDesc: ['short description', 'shortdesc', 'excerpt'],
-      description: ['description', 'full description'],
+      wpImage1: ['wordpress media url 1', 'wp media url 1'],
+      wpImage2: ['wordpress media url 2', 'wp media url 2'],
+      wpImage3: ['wordpress media url 3', 'wp media url 3'],
       pattern: ['pattern name', 'pattern'],
-      era: ['era / year made', 'era', 'year made', 'date'],
+      era: ['era / year made', 'era', 'year made'],
       origin: ['country of origin', 'origin', 'country'],
-      pieceType: ['piece type', 'type'],
       condition: ['condition'],
-      conditionNotes: ['condition notes', 'notes'],
-      tags: ['tags'],
-      wpImage1: ['wordpress media url 1', 'wp media url 1', 'image url 1'],
-      wpImage2: ['wordpress media url 2', 'wp media url 2', 'image url 2'],
-      wpImage3: ['wordpress media url 3', 'wp media url 3', 'image url 3']
+      conditionNotes: ['condition notes', 'notes']
     };
 
     function findColumn(headers, variations) {
-      const lowerHeaders = headers.map(h => h?.toLowerCase().trim() || '');
-      for (const variation of variations) {
-        const idx = lowerHeaders.indexOf(variation.toLowerCase());
+      const lower = headers.map(h => h?.toLowerCase().trim() || '');
+      for (const v of variations) {
+        const idx = lower.indexOf(v.toLowerCase());
         if (idx !== -1) return headers[idx];
       }
       return null;
@@ -271,6 +158,7 @@
     function processImageUrl(url) {
       if (!url || typeof url !== 'string') return 'https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image';
       let imageUrl = url.split(',')[0].trim();
+      if (!imageUrl || imageUrl === '#REF!') return 'https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image';
       const driveMatch = imageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
       if (driveMatch && driveMatch[1]) {
         return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w800`;
@@ -281,80 +169,35 @@
 
     function mergeWordPressImages(row, headers) {
       const urls = [];
-      
-      // 1. Check main WooCommerce Images column first
       const mainCol = findColumn(headers, COLUMN_MAP.image);
-      if (mainCol && row[mainCol]?.toString().trim()) {
-        row[mainCol].split(',').forEach(u => {
-          const trimmed = u.trim();
-          if (trimmed && trimmed !== '#REF!') urls.push(trimmed);
-        });
+      if (mainCol && row[mainCol]?.toString().trim() && row[mainCol] !== '#REF!') {
+        row[mainCol].split(',').forEach(u => { if (u.trim() && u.trim() !== '#REF!') urls.push(u.trim()); });
       }
-      
-      // 2. If empty, check Internal WordPress Media URL columns
       if (urls.length === 0) {
         [COLUMN_MAP.wpImage1, COLUMN_MAP.wpImage2, COLUMN_MAP.wpImage3].forEach(variations => {
           const col = findColumn(headers, variations);
-          if (col && row[col]?.toString().trim()) {
-            const url = row[col].trim();
-            if (url && url !== '#REF!') urls.push(url);
-          }
+          if (col && row[col]?.toString().trim() && row[col] !== '#REF!') urls.push(row[col].trim());
         });
       }
-      
       return urls.filter(u => u).join(', ');
     }
 
-    // ==================== CSV PARSING WITH SMART FILTERING ====================
-    function parseCSV(csvText) {
-      return new Promise((resolve, reject) => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          transformHeader: header => header?.trim() || '',
-          complete: (results) => {
-            if (results.errors.length) console.warn('CSV parse warnings:', results.errors);
-            resolve(results.data);
-          },
-          error: reject
-        });
-      });
-    }
-
-    // Check if row is documentation (not actual product data)
+    // ==================== CSV PARSING ====================
     function isDocumentationRow(row) {
-      const docPatterns = [
-        'WOOCOMMERCE IMPORT FIELDS',
-        'STORE MANAGEMENT FIELDS',
-        'WooCommerce Import Guide',
-        'Image Workflow',
-        'Condition Guide',
-        'GOLDEN RULES',
-        'CONDITION GRADE',
-        'HOW TO IMPORT',
-        'STEP',
-        'ACTION'
-      ];
-      
+      const patterns = ['WOOCOMMERCE IMPORT', 'STORE MANAGEMENT', 'HOW TO IMPORT', 'IMAGE WORKFLOW', 'GOLDEN RULES', 'CONDITION GRADE'];
       for (const value of Object.values(row)) {
-        if (value && docPatterns.some(p => value.toString().toUpperCase().includes(p))) {
-          return true;
-        }
+        if (value && patterns.some(p => value.toString().toUpperCase().includes(p))) return true;
       }
       return false;
     }
 
-    // Check if row is empty (all commas)
     function isEmptyRow(row) {
-      const values = Object.values(row);
-      return values.every(v => !v || v.toString().trim() === '' || v.toString().trim() === '#REF!');
+      return Object.values(row).every(v => !v || v.toString().trim() === '' || v.toString().trim() === '#REF!');
     }
 
-    // Check if row has valid SKU pattern (XX-XXX-XXX-XXX)
     function hasValidSKU(row, skuCol) {
       if (!skuCol || !row[skuCol]) return false;
       const sku = row[skuCol].toString().trim();
-      // Match patterns like: RD-OC-DP-001, WW-BS-SP-001, etc.
       return /^[A-Z]{2,4}-[A-Z]{2,4}-[A-Z]{2,4}-\d{3}$/.test(sku);
     }
 
@@ -362,109 +205,214 @@
       const nameCol = findColumn(headers, COLUMN_MAP.name);
       const skuCol = findColumn(headers, COLUMN_MAP.sku);
       if (!nameCol || !skuCol) return null;
-
       const priceCol = findColumn(headers, COLUMN_MAP.price);
       const stockCol = findColumn(headers, COLUMN_MAP.stock);
-      const rawPrice = row[priceCol] || '0';
-      const price = parseFloat(rawPrice.toString().replace(/[^0-9.]/g, '')) || 0;
-      const rawStock = row[stockCol] || '0';
-      const stock = parseInt(rawStock.toString().replace(/[^0-9]/g, '')) || 0;
-
+      const price = parseFloat((row[priceCol] || '0').toString().replace(/[^0-9.]/g, '')) || 0;
+      const stock = parseInt((row[stockCol] || '0').toString().replace(/[^0-9]/g, '')) || 0;
       const mergedImages = mergeWordPressImages(row, headers);
-      const imageCol = mergedImages || row[findColumn(headers, COLUMN_MAP.image)];
-
       return {
         name: row[nameCol]?.toString().trim() || 'Untitled',
-        sku: row[skuCol]?.toString().trim() || `SKU-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+        sku: row[skuCol]?.toString().trim(),
         price: price,
         priceFormatted: price > 0 ? `$${price.toFixed(2)}` : 'Contact',
-        image: processImageUrl(imageCol),
-        images: mergedImages.split(',').map(processImageUrl).filter(u => u),
+        image: processImageUrl(mergedImages),
         stock: stock,
         inStock: stock > 0,
-        shortDesc: row[findColumn(headers, COLUMN_MAP.shortDesc)]?.toString().trim() || '',
         pattern: row[findColumn(headers, COLUMN_MAP.pattern)]?.toString().trim() || '',
         era: row[findColumn(headers, COLUMN_MAP.era)]?.toString().trim() || '',
         origin: row[findColumn(headers, COLUMN_MAP.origin)]?.toString().trim() || '',
-        pieceType: row[findColumn(headers, COLUMN_MAP.pieceType)]?.toString().trim() || '',
         condition: row[findColumn(headers, COLUMN_MAP.condition)]?.toString().trim() || '',
-        conditionNotes: row[findColumn(headers, COLUMN_MAP.conditionNotes)]?.toString().trim() || '',
-        tags: (row[findColumn(headers, COLUMN_MAP.tags)]?.toString() || '').split(',').map(t => t.trim()).filter(t => t)
+        conditionNotes: row[findColumn(headers, COLUMN_MAP.conditionNotes)]?.toString().trim() || ''
       };
     }
 
-    // ==================== FILE UPLOAD HANDLING ====================
+    // ==================== FILE UPLOAD ====================
     async function handleFileUpload(file) {
-      showStatus('Reading file...', 'text-gray-600');
+      const status = document.getElementById('uploadStatus');
+      const debug = document.getElementById('debugInfo');
+      status.classList.remove('hidden');
+      status.textContent = 'Reading file...';
+      status.className = 'mt-6 text-sm font-sans text-gray-600';
+      debug.classList.add('hidden');
       
       try {
         const text = await file.text();
-        const rawData = await parseCSV(text);
+        debug.textContent = `File size: ${(text.length / 1024).toFixed(2)} KB`;
+        debug.classList.remove('hidden');
         
-        if (!rawData.length) throw new Error('No data found in file');
-        
-        const headers = Object.keys(rawData[0]);
-        const skuCol = findColumn(headers, COLUMN_MAP.sku);
-        
-        // Smart filtering: skip documentation, empty rows, keep only valid products
-        const filteredData = rawData.filter(row => {
-          if (isDocumentationRow(row)) return false;
-          if (isEmptyRow(row)) return false;
-          if (!hasValidSKU(row, skuCol)) return false;
-          return true;
-        });
-        
-        if (!filteredData.length) {
-          throw new Error(`No valid product rows found. Expected SKU format: XX-XXX-XXX-XXX (e.g., RD-OC-DP-001). Found ${rawData.length} total rows, but none matched.`);
-        }
-        
-        const products = filteredData
-          .map(row => normalizeProduct(row, headers))
-          .filter(p => p !== null && p.name && p.sku);
-        
-        if (!products.length) throw new Error('Could not map required columns (Name, SKU)');
-        
-        state.products = products;
-        showStatus(`✓ Successfully loaded ${products.length} items. Switch to Customer Mode to view.`, 'text-green-700');
-        
-        setTimeout(() => {
-          if (products.length > 0 && confirm(`Loaded ${products.length} items. Switch to Customer Mode to preview?`)) {
-            setMode('customer');
+        Papa.parse(text, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            const headers = Object.keys(results.data[0] || {});
+            const skuCol = findColumn(headers, COLUMN_MAP.sku);
+            
+            const filtered = results.data.filter(row => {
+              if (isDocumentationRow(row)) return false;
+              if (isEmptyRow(row)) return false;
+              if (!hasValidSKU(row, skuCol)) return false;
+              return true;
+            });
+            
+            const products = filtered.map(row => normalizeProduct(row, headers)).filter(p => p && p.name && p.sku);
+            
+            if (!products.length) {
+              status.textContent = `✗ Error: No valid products found. Total rows: ${results.data.length}, Valid: ${filtered.length}. Check SKU format (e.g., RD-OC-DP-001)`;
+              status.className = 'mt-6 text-sm font-sans text-red-600';
+              debug.textContent += ` | Headers found: ${headers.length} | SKU column: ${skuCol || 'NOT FOUND'}`;
+              return;
+            }
+            
+            state.products = products;
+            status.textContent = `✓ Successfully loaded ${products.length} items. Click "Customer" to view.`;
+            status.className = 'mt-6 text-sm font-sans text-green-700';
+            debug.textContent += ` | Products loaded: ${products.length}`;
+          },
+          error: (err) => {
+            status.textContent = `✗ Parse Error: ${err.message}`;
+            status.className = 'mt-6 text-sm font-sans text-red-600';
           }
-        }, 800);
-        
+        });
       } catch (err) {
-        console.error('Upload error:', err);
-        showStatus(`✗ Error: ${err.message}`, 'text-red-600');
+        status.textContent = `✗ Error: ${err.message}`;
+        status.className = 'mt-6 text-sm font-sans text-red-600';
       }
     }
 
-    function showStatus(message, className) {
-      els.uploadStatus.textContent = message;
-      els.uploadStatus.className = `mt-6 text-sm font-sans ${className}`;
-      els.uploadStatus.classList.remove('hidden');
-    }
-
-    // ==================== RENDER FUNCTIONS ====================
+    // ==================== RENDER ====================
     function renderGrid() {
       const term = state.searchTerm.toLowerCase();
       const filtered = state.products.filter(p => 
-        p.name.toLowerCase().includes(term) ||
-        p.sku.toLowerCase().includes(term) ||
-        p.pattern?.toLowerCase().includes(term) ||
-        p.era?.toLowerCase().includes(term) ||
-        p.origin?.toLowerCase().includes(term) ||
-        p.tags?.some(t => t.toLowerCase().includes(term))
+        p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term) ||
+        p.pattern?.toLowerCase().includes(term) || p.era?.toLowerCase().includes(term)
       );
-
-      els.productCount.textContent = filtered.length;
-      els.emptyState.classList.toggle('hidden', filtered.length > 0);
+      document.getElementById('productCount').textContent = filtered.length;
+      document.getElementById('emptyState').classList.toggle('hidden', filtered.length > 0);
       
-      if (filtered.length === 0) {
-        els.productGrid.innerHTML = '';
-        return;
-      }
+      if (filtered.length === 0) { document.getElementById('productGrid').innerHTML = ''; return; }
+      
+      document.getElementById('productGrid').innerHTML = filtered.map(p => {
+        const inCart = state.cart[p.sku];
+        const qty = inCart ? inCart.quantity : 0;
+        return `
+          <div class="product-card fade-in" onclick="addToCart('${p.sku}')">
+            <div class="aspect-square bg-gray-50 mb-3 overflow-hidden rounded-sm">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image'">
+            </div>
+            <h3 class="font-medium text-lg mb-1 leading-tight">${p.name}</h3>
+            ${p.pattern ? `<p class="text-sm text-archive-accent mb-1">${p.pattern}</p>` : ''}
+            <p class="text-xs text-gray-500 font-sans mb-2">SKU: ${p.sku}</p>
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-medium">${p.priceFormatted}</span>
+              <span class="text-xs font-sans ${p.inStock ? 'text-green-700' : 'text-red-600'}">${p.inStock ? `(${p.stock})` : 'Out'}</span>
+            </div>
+            <button class="btn w-full ${!p.inStock ? 'opacity-50' : ''}" ${!p.inStock ? 'disabled' : ''}>${qty > 0 ? `Add More (${qty})` : 'Select'}</button>
+          </div>
+        `;
+      }).join('');
+    }
 
-      els.productGrid.innerHTML = filtered.map(product => {
-        const inCart = state.cart[product.sku];
-        const qty
+    function renderCart() {
+      const items = Object.values(state.cart);
+      document.getElementById('cartCount').textContent = items.reduce((s, i) => s + i.quantity, 0);
+      if (items.length === 0) { document.getElementById('cartItems').innerHTML = '<p class="text-center text-gray-500 py-4 font-sans text-sm">No items</p>'; return; }
+      document.getElementById('cartItems').innerHTML = items.map(i => `
+        <div class="flex justify-between items-center py-2 border-b border-archive-border">
+          <div class="flex-1"><p class="font-medium text-sm">${i.product.name}</p><p class="text-xs text-gray-500">${i.product.sku}</p></div>
+          <div class="flex items-center gap-2">
+            <button class="w-6 h-6 border" onclick="updateCartQty('${i.product.sku}', -1)">−</button>
+            <span class="w-6 text-center text-sm">${i.quantity}</span>
+            <button class="w-6 h-6 border" onclick="updateCartQty('${i.product.sku}', 1)">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==================== CART ====================
+    function addToCart(sku) {
+      const product = state.products.find(p => p.sku === sku);
+      if (!product || !product.inStock) return;
+      if (!state.cart[sku]) state.cart[sku] = { product, quantity: 0 };
+      if (state.cart[sku].quantity >= product.stock) { alert('Max stock reached'); return; }
+      state.cart[sku].quantity++;
+      renderCart();
+      renderGrid();
+      document.getElementById('cart-tray').classList.remove('hidden');
+    }
+    function updateCartQty(sku, delta) {
+      if (!state.cart[sku]) return;
+      const newQty = state.cart[sku].quantity + delta;
+      if (newQty <= 0) { delete state.cart[sku]; } else { state.cart[sku].quantity = newQty; }
+      renderCart();
+      renderGrid();
+    }
+
+    // ==================== MODE TOGGLE ====================
+    function setMode(mode) {
+      state.mode = mode;
+      const adminView = document.getElementById('adminView');
+      const customerView = document.getElementById('customerView');
+      const adminBtn = document.getElementById('adminBtn');
+      const customerBtn = document.getElementById('customerBtn');
+      const cartBtn = document.getElementById('toggleCartBtn');
+      
+      if (mode === 'admin') {
+        adminView.classList.remove('hidden');
+        customerView.classList.add('hidden');
+        cartBtn.classList.add('hidden');
+        adminBtn.classList.add('font-bold', 'text-archive-accent');
+        adminBtn.classList.remove('text-gray-500');
+        customerBtn.classList.remove('font-bold', 'text-archive-accent');
+        customerBtn.classList.add('text-gray-500');
+      } else {
+        adminView.classList.add('hidden');
+        customerView.classList.remove('hidden');
+        cartBtn.classList.remove('hidden');
+        customerBtn.classList.add('font-bold', 'text-archive-accent');
+        customerBtn.classList.remove('text-gray-500');
+        adminBtn.classList.remove('font-bold', 'text-archive-accent');
+        adminBtn.classList.add('text-gray-500');
+        renderGrid();
+        renderCart();
+      }
+    }
+
+    // ==================== EXPORT ====================
+    function exportManifest() {
+      const items = Object.values(state.cart);
+      if (!items.length) { alert('No items selected'); return; }
+      let content = `THE PLATE ARCHIVE CO. — SELECTION MANIFEST\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
+      let total = 0;
+      items.forEach(i => {
+        const lineTotal = i.product.price * i.quantity;
+        total += lineTotal;
+        content += `SKU: ${i.product.sku}\nItem: ${i.product.name}\nQty: ${i.quantity}\nPrice: ${i.product.priceFormatted}\nSubtotal: $${lineTotal.toFixed(2)}\n${'-'.repeat(40)}\n`;
+      });
+      content += `\nGRAND TOTAL: $${total.toFixed(2)}\n\nThank you.\nThe Plate Archive Co.`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `PlateArchive_Manifest_${new Date().toISOString().slice(0,19).replace(/[:.]/g,'-')}.txt`;
+      a.click();
+    }
+
+    // ==================== EVENTS ====================
+    document.getElementById('csvInput').addEventListener('change', e => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); });
+    document.getElementById('dropZone').addEventListener('click', () => document.getElementById('csvInput').click());
+    document.getElementById('dropZone').addEventListener('dragover', e => { e.preventDefault(); this.classList.add('border-archive-accent'); });
+    document.getElementById('dropZone').addEventListener('dragleave', e => { e.preventDefault(); this.classList.remove('border-archive-accent'); });
+    document.getElementById('dropZone').addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFileUpload(e.dataTransfer.files[0]); });
+    document.getElementById('searchInput').addEventListener('input', e => { state.searchTerm = e.target.value.trim(); renderGrid(); });
+    document.getElementById('adminBtn').addEventListener('click', () => setMode('admin'));
+    document.getElementById('customerBtn').addEventListener('click', () => setMode('customer'));
+    document.getElementById('toggleCartBtn').addEventListener('click', () => document.getElementById('cart-tray').classList.remove('hidden'));
+    document.getElementById('closeCartBtn').addEventListener('click', () => document.getElementById('cart-tray').classList.add('hidden'));
+    document.getElementById('exportBtn').addEventListener('click', exportManifest);
+    document.getElementById('clearCartBtn').addEventListener('click', () => { state.cart = {}; renderCart(); renderGrid(); });
+
+    // Initialize
+    setMode('admin');
+    console.log('✓ The Plate Archive Co. initialized');
+  </script>
+</body>
+</html>
