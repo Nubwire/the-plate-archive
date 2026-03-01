@@ -1,0 +1,29 @@
+# netlify.toml — The Plate Archive Co.
+# Optimized for static single-file storefront
+
+[build]
+  publish = "."
+  # No build command — pure static HTML
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Cache static assets aggressively
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    # Never cache HTML — ensures CSV updates appear instantly
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Optional: Redirect www → non-www
+[[redirects]]
+  from = "https://www.theplatearchive.co/*"
+  to = "https://theplatearchive.co/:splat"
+  status = 301
+  force = true
