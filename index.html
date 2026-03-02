@@ -29,28 +29,71 @@
   </script>
   <style>
     body { @apply bg-archive-bg text-archive-text font-serif antialiased; }
+    
+    /* GRID LAYOUT */
     #productGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
     @media (min-width: 640px) { #productGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @media (min-width: 768px) { #productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
     @media (min-width: 1024px) { #productGrid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-    .product-card { @apply bg-white border border-archive-border p-4 transition-all duration-200 hover:shadow-lg flex flex-col; }
-    .btn-add-cart { @apply w-full bg-archive-green text-white font-sans font-medium py-3 px-4 rounded-sm hover:bg-[#1a3c2f] transition-all duration-200 text-sm uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed mt-auto; }
+    
+    /* PRODUCT CARD - Fixed height layout */
+    .product-card { 
+      @apply bg-white border border-archive-border p-4 transition-all duration-200 hover:shadow-lg flex flex-col min-h-[480px]; 
+    }
+    
+    /* Professional Button - Always visible at bottom */
+    .btn-add-cart { 
+      @apply w-full bg-archive-green text-white font-sans font-medium py-3 px-4 rounded-sm 
+             hover:bg-[#1a3c2f] transition-all duration-200 text-sm uppercase tracking-wide 
+             disabled:opacity-50 disabled:cursor-not-allowed mt-auto;
+    }
     .btn-add-cart.in-cart { @apply bg-archive-accent hover:bg-[#7a6a5a]; }
+    
     .mode-toggle { @apply fixed top-4 right-4 z-40 flex items-center space-x-2 bg-white border border-archive-border px-3 py-1.5 rounded shadow-sm font-sans text-xs; }
     .upload-zone { @apply border-2 border-dashed border-archive-border rounded-lg p-8 text-center hover:border-archive-accent transition-colors cursor-pointer; }
     .hidden { display: none !important; }
     .fade-in { animation: fadeIn 0.3s ease-in; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .product-image-wrapper { @apply relative bg-gray-50 mb-3 overflow-hidden rounded-sm; aspect-ratio: 1 / 1; max-height: 280px; }
-    .product-main-image { @apply w-full h-full object-cover cursor-pointer transition-opacity duration-300; max-height: 280px; }
-    .image-thumbnails { @apply flex gap-2 mt-3 overflow-x-auto pb-1; }
-    .thumbnail { @apply w-14 h-14 border-2 border-archive-border rounded-sm cursor-pointer opacity-60 hover:opacity-100 transition-all flex-shrink-0 object-cover; min-width: 56px; }
+    
+    /* Product Image - Fixed container */
+    .product-image-wrapper {
+      @apply relative bg-gray-50 mb-3 overflow-hidden rounded-sm;
+      aspect-ratio: 1 / 1;
+      max-height: 240px;
+    }
+    .product-main-image { 
+      @apply w-full h-full object-cover cursor-pointer transition-opacity duration-300;
+      max-height: 240px;
+    }
+    
+    /* Thumbnail Gallery - FIXED HORIZONTAL SCROLL */
+    .image-thumbnails {
+      @apply flex gap-2 mt-3 overflow-x-auto pb-1 scroll-smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #8c7b6b #f0f0f0;
+    }
+    .image-thumbnails::-webkit-scrollbar { height: 4px; }
+    .image-thumbnails::-webkit-scrollbar-track { @apply bg-gray-100 rounded; }
+    .image-thumbnails::-webkit-scrollbar-thumb { @apply bg-archive-accent rounded; }
+    
+    .thumbnail {
+      @apply w-14 h-14 border-2 border-archive-border rounded-sm cursor-pointer opacity-60 hover:opacity-100 transition-all flex-shrink-0 object-cover;
+      min-width: 56px;
+    }
     .thumbnail.active { @apply border-archive-green opacity-100 ring-2 ring-archive-green/20; }
+    
+    /* Stock Badge */
     .stock-badge { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-sans font-medium; }
     .stock-in { @apply bg-green-100 text-green-800; }
     .stock-out { @apply bg-red-100 text-red-800; }
-    #cart-tray { @apply fixed bottom-0 right-0 m-4 w-80 bg-white border border-archive-border shadow-2xl z-50 max-h-[70vh] flex flex-col hidden; }
-    #cart-tray.open { @apply flex; }
+    
+    /* Cart - FIXED TOGGLE */
+    #cart-tray { 
+      @apply fixed bottom-0 right-0 m-4 w-80 bg-white border border-archive-border shadow-2xl z-50 max-h-[70vh] flex-col hidden;
+    }
+    #cart-tray:not(.hidden) { @apply flex; }
+    
     .google-signin-btn { @apply bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-sm hover:bg-gray-50 transition-colors font-sans text-sm flex items-center gap-2; }
     .nav-link { @apply text-sm text-gray-600 hover:text-archive-green transition-colors; }
     .page-content { @apply max-w-4xl mx-auto px-4 py-12; }
@@ -254,8 +297,8 @@
 
   </main>
 
-  <!-- Cart Tray -->
-  <div id="cart-tray">
+  <!-- Cart Tray - Fixed toggle -->
+  <div id="cart-tray" class="hidden">
     <div class="p-4 border-b border-archive-border flex justify-between items-center bg-archive-bg">
       <h3 class="font-medium text-sm">Selection Manifest</h3>
       <button id="closeCartBtn" class="text-gray-500 text-xl">&times;</button>
@@ -310,47 +353,29 @@
 
   <script>
     // ==================== STATE ====================
-    const state = { products: [], cart: {}, mode: 'admin', searchTerm: '', currentPage: 'shop', isAdminLoggedIn: false };
+    const state = { products: [], cart: {}, mode: 'customer', searchTerm: '', currentPage: 'shop', isAdminLoggedIn: false };
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // ==================== GOOGLE AUTH ====================
     let googleUser = null;
-    
-    function handleCredentialResponse(response) {
-      googleUser = response.credential;
-      state.isAdminLoggedIn = true;
-      showAdminControls();
-    }
-    
+    function handleCredentialResponse(response) { googleUser = response.credential; state.isAdminLoggedIn = true; showAdminControls(); }
     function showAdminControls() {
       document.getElementById('googleSignInBtn').classList.add('hidden');
       document.getElementById('modeToggle').classList.remove('hidden');
       document.getElementById('toggleCartBtn').classList.remove('hidden');
-      if (state.mode === 'admin') {
-        document.getElementById('adminView').classList.remove('hidden');
-        document.getElementById('customerView').classList.add('hidden');
-      }
+      if (state.mode === 'admin') { document.getElementById('adminView').classList.remove('hidden'); document.getElementById('customerView').classList.add('hidden'); }
     }
-    
     function handleSignOut() {
-      googleUser = null;
-      state.isAdminLoggedIn = false;
-      state.mode = 'customer';
+      googleUser = null; state.isAdminLoggedIn = false; state.mode = 'customer';
       document.getElementById('googleSignInBtn').classList.remove('hidden');
       document.getElementById('modeToggle').classList.add('hidden');
       document.getElementById('adminView').classList.add('hidden');
       document.getElementById('customerView').classList.remove('hidden');
       renderGrid();
     }
-    
-    // 🔑 GOOGLE OAUTH CLIENT ID - Already set with your credentials
-    // Your Client ID: 167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com
     window.onload = function() {
       if (window.google && google.accounts) {
-        google.accounts.id.initialize({
-          client_id: '167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com',
-          callback: handleCredentialResponse
-        });
+        google.accounts.id.initialize({ client_id: '167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com', callback: handleCredentialResponse });
         google.accounts.id.renderButton(document.getElementById('googleSignInContainer'), { theme: 'outline', size: 'large', width: 200 });
       }
     };
@@ -363,11 +388,7 @@
         document.getElementById('shopPage').classList.remove('hidden');
         if (state.isAdminLoggedIn) document.getElementById('modeToggle').classList.remove('hidden');
         if (state.mode === 'customer') renderGrid();
-      } else {
-        document.getElementById(pageName + 'Page').classList.remove('hidden');
-        document.getElementById('modeToggle').classList.add('hidden');
-        window.scrollTo(0, 0);
-      }
+      } else { document.getElementById(pageName + 'Page').classList.remove('hidden'); document.getElementById('modeToggle').classList.add('hidden'); window.scrollTo(0, 0); }
       const navLink = document.getElementById('nav-' + pageName);
       if (navLink) navLink.classList.add('font-medium', 'text-archive-green');
       state.currentPage = pageName;
@@ -386,7 +407,6 @@
       origin: ['country of origin', 'origin', 'country'], condition: ['condition'],
       conditionNotes: ['condition notes', 'notes']
     };
-
     function findColumn(headers, variations) {
       const cleanedHeaders = headers.map((h, idx) => ({ original: h, cleaned: (h || '').toString().toLowerCase().trim(), index: idx }));
       for (const variation of variations) {
@@ -394,14 +414,11 @@
         const match = cleanedHeaders.find(h => h.cleaned === target);
         if (match) return headers[match.index];
       }
-      if (variations.includes('sku') && headers.length > 2) {
-        const potentialSkuCol = headers[2];
-        if (potentialSkuCol && potentialSkuCol.toString().trim()) return potentialSkuCol;
-      }
+      if (variations.includes('sku') && headers.length > 2) { const potentialSkuCol = headers[2]; if (potentialSkuCol && potentialSkuCol.toString().trim()) return potentialSkuCol; }
       return null;
     }
 
-    // ==================== IMAGE PROCESSING ====================
+    // ==================== IMAGE PROCESSING - FIXED DEDUPLICATION ====================
     function processImageUrl(url) {
       if (!url || typeof url !== 'string') return 'https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image';
       let imageUrl = url.split(',')[0].trim();
@@ -413,38 +430,37 @@
     }
 
     function getAllProductImages(row, headers) {
-      const urls = [];
+      const urls = new Set(); // Use Set to automatically deduplicate
+      
+      // Check WordPress Media URL columns first (these are your actual images)
       [COLUMN_MAP.wpImage1, COLUMN_MAP.wpImage2, COLUMN_MAP.wpImage3].forEach(variations => {
         const col = findColumn(headers, variations);
         if (col && row[col]?.toString().trim() && row[col] !== '#REF!') {
           const url = row[col].trim();
-          if (url.startsWith('http')) urls.push(url);
+          if (url.startsWith('http')) urls.add(url);
         }
       });
+      
+      // Also check main Images column (but skip if already added from WP columns)
       const mainCol = findColumn(headers, COLUMN_MAP.image);
       if (mainCol && row[mainCol]?.toString().trim()) {
         row[mainCol].split(',').forEach(u => {
           const trimmed = u.trim();
-          if (trimmed && trimmed !== '#REF!' && trimmed.startsWith('http') && !urls.includes(trimmed)) urls.unshift(trimmed);
+          if (trimmed && trimmed !== '#REF!' && trimmed.startsWith('http')) urls.add(trimmed);
         });
       }
-      return urls.filter(u => u);
+      
+      return Array.from(urls).filter(u => u); // Convert Set back to array
     }
 
     // ==================== CSV PARSING ====================
     function isDocumentationRow(row) {
       const patterns = ['WOOCOMMERCE IMPORT', 'STORE MANAGEMENT', 'HOW TO IMPORT', 'IMAGE WORKFLOW', 'GOLDEN RULES', 'CONDITION GRADE'];
-      for (const value of Object.values(row)) {
-        if (value && patterns.some(p => value.toString().toUpperCase().includes(p))) return true;
-      }
+      for (const value of Object.values(row)) { if (value && patterns.some(p => value.toString().toUpperCase().includes(p))) return true; }
       return false;
     }
     function isEmptyRow(row) { return Object.values(row).every(v => !v || v.toString().trim() === '' || v.toString().trim() === '#REF!'); }
-    function hasValidSKU(row, skuCol) {
-      if (!skuCol || !row[skuCol]) return false;
-      const sku = row[skuCol].toString().trim();
-      return /^[A-Z0-9]{2,4}-[A-Z0-9]{2,6}-[A-Z0-9]{2,4}-\d{3}$/.test(sku);
-    }
+    function hasValidSKU(row, skuCol) { if (!skuCol || !row[skuCol]) return false; const sku = row[skuCol].toString().trim(); return /^[A-Z0-9]{2,4}-[A-Z0-9]{2,6}-[A-Z0-9]{2,4}-\d{3}$/.test(sku); }
     function normalizeProduct(row, headers) {
       const nameCol = findColumn(headers, COLUMN_MAP.name), skuCol = findColumn(headers, COLUMN_MAP.sku);
       if (!nameCol || !skuCol) return null;
@@ -471,44 +487,54 @@
       status.classList.remove('hidden'); status.textContent = 'Reading file...'; status.className = 'mt-6 text-sm font-sans text-gray-600';
       try {
         const text = await file.text();
-        Papa.parse(text, {
-          header: true, skipEmptyLines: true,
-          complete: (results) => {
-            const headers = Object.keys(results.data[0] || {}), skuCol = findColumn(headers, COLUMN_MAP.sku);
-            const filtered = results.data.filter(row => { if (isDocumentationRow(row)) return false; if (isEmptyRow(row)) return false; if (!hasValidSKU(row, skuCol)) return false; return true; });
-            const products = filtered.map(row => normalizeProduct(row, headers)).filter(p => p && p.name && p.sku);
-            if (!products.length) { status.textContent = `✗ Error: No valid products found. Total rows: ${results.data.length}, Valid: ${filtered.length}. Check SKU format (e.g., RD-OC-DP-001)`; status.className = 'mt-6 text-sm font-sans text-red-600'; return; }
-            state.products = products; status.textContent = `✓ Successfully loaded ${products.length} items. Switch to Customer mode to view.`; status.className = 'mt-6 text-sm font-sans text-green-700';
-          },
-          error: (err) => { status.textContent = `✗ Parse Error: ${err.message}`; status.className = 'mt-6 text-sm font-sans text-red-600'; }
-        });
+        Papa.parse(text, { header: true, skipEmptyLines: true, complete: (results) => {
+          const headers = Object.keys(results.data[0] || {}), skuCol = findColumn(headers, COLUMN_MAP.sku);
+          const filtered = results.data.filter(row => { if (isDocumentationRow(row)) return false; if (isEmptyRow(row)) return false; if (!hasValidSKU(row, skuCol)) return false; return true; });
+          const products = filtered.map(row => normalizeProduct(row, headers)).filter(p => p && p.name && p.sku);
+          if (!products.length) { status.textContent = `✗ Error: No valid products found. Total rows: ${results.data.length}, Valid: ${filtered.length}. Check SKU format (e.g., RD-OC-DP-001)`; status.className = 'mt-6 text-sm font-sans text-red-600'; return; }
+          state.products = products; status.textContent = `✓ Successfully loaded ${products.length} items. Switch to Customer mode to view.`; status.className = 'mt-6 text-sm font-sans text-green-700';
+        }, error: (err) => { status.textContent = `✗ Parse Error: ${err.message}`; status.className = 'mt-6 text-sm font-sans text-red-600'; }});
       } catch (err) { status.textContent = `✗ Error: ${err.message}`; status.className = 'mt-6 text-sm font-sans text-red-600'; }
     }
 
-    // ==================== RENDER ====================
+    // ==================== RENDER - FIXED LAYOUT ====================
     function renderGrid() {
       const term = state.searchTerm.toLowerCase();
       const filtered = state.products.filter(p => p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term) || p.pattern?.toLowerCase().includes(term) || p.era?.toLowerCase().includes(term));
       document.getElementById('productCount').textContent = filtered.length;
       document.getElementById('emptyState').classList.toggle('hidden', filtered.length > 0);
       if (filtered.length === 0) { document.getElementById('productGrid').innerHTML = ''; return; }
+      
       document.getElementById('productGrid').innerHTML = filtered.map(p => {
         const inCart = state.cart[p.sku], qty = inCart ? inCart.quantity : 0;
         const hasMultipleImages = p.images && p.images.length > 1;
+        
+        // Generate thumbnail HTML - only if we have multiple UNIQUE images
         let thumbnailsHTML = '';
         if (hasMultipleImages) {
           thumbnailsHTML = '<div class="image-thumbnails">';
-          p.images.forEach((img, idx) => { thumbnailsHTML += `<img src="${img}" class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="changeImage('${img}', '${p.sku}')" alt="View ${idx + 1}">`; });
+          p.images.forEach((img, idx) => {
+            thumbnailsHTML += `<img src="${img}" class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="changeImage('${img}', '${p.sku}')" alt="View ${idx + 1}">`;
+          });
           thumbnailsHTML += '</div>';
         }
+        
         return `<div class="product-card fade-in" data-sku="${p.sku}">
-          <div class="product-image-wrapper"><img src="${p.image}" alt="${p.name}" class="product-main-image" id="main-img-${p.sku}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image'">${hasMultipleImages ? '<div class="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full font-sans">' + p.images.length + ' photos</div>' : ''}</div>
+          <div class="product-image-wrapper">
+            <img src="${p.image}" alt="${p.name}" class="product-main-image" id="main-img-${p.sku}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image'">
+            ${hasMultipleImages ? '<div class="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full font-sans">' + p.images.length + ' photos</div>' : ''}
+          </div>
           ${thumbnailsHTML}
           <h3 class="font-medium text-base mb-1 leading-tight line-clamp-2 mt-3">${p.name}</h3>
           ${p.pattern ? `<p class="text-xs text-archive-accent mb-2 font-sans uppercase tracking-wide">${p.pattern}</p>` : ''}
           <p class="text-xs text-gray-500 font-sans mb-3">SKU: ${p.sku}</p>
-          <div class="flex justify-between items-center mb-4"><span class="font-medium text-lg">${p.priceFormatted}</span>${p.inStock ? `<span class="stock-badge stock-in">✓ ${p.stock} in stock</span>` : `<span class="stock-badge stock-out">Out of stock</span>`}</div>
-          <button class="btn-add-cart ${qty > 0 ? 'in-cart' : ''}" onclick="addToCart('${p.sku}'); event.stopPropagation();" ${!p.inStock ? 'disabled' : ''}>${qty > 0 ? `✓ Added to Cart (${qty})` : 'Add to Cart'}</button>
+          <div class="flex justify-between items-center mb-4">
+            <span class="font-medium text-lg">${p.priceFormatted}</span>
+            ${p.inStock ? `<span class="stock-badge stock-in">✓ ${p.stock} in stock</span>` : `<span class="stock-badge stock-out">Out of stock</span>`}
+          </div>
+          <button class="btn-add-cart ${qty > 0 ? 'in-cart' : ''}" onclick="addToCart('${p.sku}'); event.stopPropagation();" ${!p.inStock ? 'disabled' : ''}>
+            ${qty > 0 ? `✓ Added to Cart (${qty})` : 'Add to Cart'}
+          </button>
         </div>`;
       }).join('');
     }
@@ -530,7 +556,7 @@
       </div>`).join('');
     }
 
-    // ==================== CART ====================
+    // ==================== CART - FIXED TOGGLE ====================
     function addToCart(sku) {
       const product = state.products.find(p => p.sku === sku);
       if (!product || !product.inStock) return;
@@ -544,8 +570,12 @@
       if (newQty <= 0) { delete state.cart[sku]; } else if (newQty <= state.cart[sku].product.stock) { state.cart[sku].quantity = newQty; }
       renderCart(); renderGrid();
     }
-    function openCart() { document.getElementById('cart-tray').classList.add('open'); }
-    function closeCart() { document.getElementById('cart-tray').classList.remove('open'); }
+    function openCart() { 
+      const cart = document.getElementById('cart-tray');
+      cart.classList.remove('hidden'); // Remove hidden first
+      setTimeout(() => cart.classList.add('open'), 10); // Then add open for transition if needed
+    }
+    function closeCart() { document.getElementById('cart-tray').classList.add('hidden'); }
 
     // ==================== MODE TOGGLE ====================
     function setMode(mode) {
@@ -596,7 +626,6 @@
     // Initialize
     setMode('customer'); showPage('shop');
     console.log('✓ The Plate Archive Co. initialized');
-    console.log('🔑 Google Client ID: 167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com');
   </script>
 </body>
 </html>
