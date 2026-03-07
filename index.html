@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>The Plate Archive Co. | Antique & Vintage Collectibles</title>
+  <title>The Plate Archive Co. | Curated Antique Ceramics</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -24,150 +23,112 @@
     }
   </script>
 
-  <style>
-    body { @apply bg-archive-bg text-archive-text font-serif antialiased; }
+  <style type="text/css">
+    body { background-color: #F7F3F0; color: #1a1a1a; font-family: 'Cormorant Garamond', serif; -webkit-font-smoothing: antialiased; }
     .hidden { display: none !important; }
-    /* Mode Toggle styling - Hidden from customers */
-    .mode-toggle { @apply fixed top-4 right-4 z-[60] flex items-center space-x-3 bg-white border border-archive-border px-4 py-2 rounded shadow-lg font-sans text-xs transition-all; }
     
-    /* Product Grid */
-    #productGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
-    @media (min-width: 768px) { #productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    /* Clean Mode Toggle - Styled as a premium toolbar */
+    .mode-toggle { @apply fixed top-0 left-0 w-full z-[100] bg-archive-green text-white text-[10px] py-1 px-4 flex justify-between items-center font-sans uppercase tracking-widest shadow-md; }
     
-    /* Premium Hover Effect */
-    .hero-zoom { transition: transform 10s ease-out; }
-    .hero-container:hover .hero-zoom { transform: scale(1.1); }
+    /* Product Grid layout */
+    #productGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    @media (min-width: 768px) { #productGrid { grid-template-columns: repeat(4, 1fr); } }
+
+    /* Fix for the spinning/loading icons */
+    .loading-spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
 
 <body class="min-h-screen flex flex-col">
 
-  <div class="mode-toggle hidden" id="modeToggle">
-    <span class="font-medium text-gray-400">ARCHIVE TOOLS:</span>
-    <button id="adminBtn" class="font-bold text-archive-green hover:underline" onclick="setMode('admin')">ADMIN</button>
-    <span class="text-gray-300">|</span>
-    <button id="customerBtn" class="text-gray-500 hover:text-archive-green" onclick="setMode('customer')">VIEW SITE</button>
-    <button id="signOutBtn" onclick="handleSignOut()" class="ml-4 text-red-600 font-bold hover:underline">LOGOUT</button>
+  <div id="modeToggle" class="mode-toggle hidden">
+    <span>Archive Management Active</span>
+    <div class="flex space-x-4">
+      <button onclick="setMode('admin')" class="font-bold border-b border-white">Admin View</button>
+      <button onclick="setMode('customer')" class="opacity-70 hover:opacity-100">Live Site View</button>
+      <button onclick="handleSignOut()" class="text-red-300">Logout</button>
+    </div>
   </div>
 
-  <header class="border-b border-archive-border py-4 px-4 md:px-8 bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+  <header class="bg-white border-b border-archive-border py-6 px-4 md:px-8 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div class="flex items-center space-x-4 cursor-pointer" onclick="showPage('shop')">
-        <img src="logo.jpg" class="w-14 h-14 rounded-full border border-archive-gold object-cover shadow-sm" onerror="this.src='https://via.placeholder.com/60?text=P'">
-        <div class="hidden sm:block">
-          <h1 class="text-xl font-serif font-light tracking-[0.2em] uppercase text-archive-green leading-none">The Plate Archive</h1>
-          <p class="text-[9px] text-gray-400 font-sans uppercase tracking-[0.3em] mt-2">A Federation Collectibles Company</p>
+      <div class="flex items-center space-x-4 cursor-pointer" onclick="location.reload()">
+        <img src="logo.jpg" class="w-14 h-14 rounded-full border border-archive-gold object-cover" onerror="this.src='https://via.placeholder.com/60/1b3c2e/d4af37?text=P'">
+        <div>
+          <h1 class="text-xl md:text-2xl font-serif tracking-[0.2em] uppercase leading-none">The Plate Archive</h1>
+          <p class="text-[9px] text-gray-400 font-sans uppercase tracking-[0.3em] mt-1">A Federation Collectibles Company</p>
         </div>
       </div>
 
       <div class="flex items-center space-x-4">
         <div id="googleSignInContainer"></div>
-        
-        <button id="toggleCartBtn" class="bg-archive-green text-white px-6 py-2.5 rounded-sm text-xs font-sans uppercase tracking-widest hover:bg-black transition-all">
-          Manifest (<span id="cartCount">0</span>)
+        <button id="toggleCartBtn" class="bg-archive-green text-white px-5 py-2 text-[11px] font-sans uppercase tracking-widest hover:bg-black transition-all">
+          Cart (<span id="cartCount">0</span>)
         </button>
       </div>
     </div>
   </header>
 
-  <section id="heroSection" class="hero-container relative w-full h-[500px] flex items-center justify-center overflow-hidden border-b border-archive-gold/20">
-    <img src="hero.jpg" class="hero-zoom absolute inset-0 w-full h-full object-cover brightness-[0.6]" onerror="this.parentElement.style.backgroundColor='#1b3c2e'">
-    <div class="relative z-10 text-center px-4">
-      <div class="mb-4 inline-block">
-        <span class="block h-px w-10 bg-archive-gold mx-auto mb-3"></span>
-        <h2 class="text-white text-5xl md:text-7xl font-serif italic font-light tracking-tight">Timeless Elegance</h2>
-        <span class="block h-px w-10 bg-archive-gold mx-auto mt-3"></span>
-      </div>
-      <p class="text-archive-gold font-sans uppercase tracking-[0.5em] text-[10px] md:text-xs">
-        Curating History, One Plate at a Time
-      </p>
+  <section class="relative h-[450px] flex items-center justify-center overflow-hidden">
+    <img src="hero.jpg" class="absolute inset-0 w-full h-full object-cover brightness-[0.7]" onerror="this.src='https://via.placeholder.com/1200x500/1b3c2e/1b3c2e'">
+    <div class="relative z-10 text-center text-white">
+      <h2 class="text-5xl md:text-7xl italic font-light mb-2">Timeless Elegance</h2>
+      <p class="text-archive-gold font-sans uppercase tracking-[0.5em] text-[10px]">Curating History, One Plate at a Time</p>
     </div>
   </section>
-
-  <nav class="bg-white border-b border-archive-border py-4 overflow-x-auto">
-    <div class="max-w-7xl mx-auto flex justify-center space-x-8 px-4 text-[11px] font-sans uppercase tracking-[0.2em] whitespace-nowrap">
-      <button onclick="showPage('shop')" class="hover:text-archive-green transition-colors">The Archive</button>
-      <button onclick="showPage('about')" class="hover:text-archive-green transition-colors">Our Story</button>
-      <button onclick="showPage('shipping')" class="hover:text-archive-green transition-colors">Logistics</button>
-      <button onclick="showPage('returns')" class="hover:text-archive-green transition-colors">Policies</button>
-    </div>
-  </nav>
 
   <main class="flex-1 max-w-7xl mx-auto px-4 md:px-8 py-12 w-full">
     
     <div id="shopPage">
-      <section id="adminView" class="hidden py-12 border-2 border-dashed border-archive-gold/30 rounded-lg bg-white text-center mb-12">
-        <h3 class="text-2xl font-light mb-4">Master Inventory Upload</h3>
+      <section id="adminView" class="hidden mb-12 p-10 border-2 border-dashed border-archive-border bg-white text-center">
+        <h3 class="text-xl mb-4 font-serif italic">Archive Synchronization</h3>
         <input type="file" id="csvInput" accept=".csv" class="hidden" onchange="handleFileUpload(this.files[0])">
-        <label for="csvInput" class="inline-block bg-archive-green text-white px-8 py-3 rounded-sm cursor-pointer hover:bg-black transition-all font-sans text-xs uppercase tracking-widest">
-          Select Stock Master CSV
+        <label for="csvInput" class="inline-block bg-archive-accent text-white px-6 py-2 rounded-sm cursor-pointer hover:bg-archive-green transition-all text-xs font-sans uppercase tracking-widest">
+          Upload Inventory CSV
         </label>
-        <p id="uploadStatus" class="mt-4 text-sm text-archive-accent italic"></p>
+        <p id="uploadStatus" class="mt-4 text-xs text-gray-500 font-sans"></p>
       </section>
 
       <section id="customerView">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-12 gap-6">
-          <input type="text" id="searchInput" placeholder="Search by pattern, era, or SKU..." 
-                 class="w-full md:w-96 border-b border-archive-border bg-transparent py-2 px-1 font-serif text-lg focus:outline-none focus:border-archive-gold transition-all">
-          <div class="text-[11px] text-gray-400 font-sans uppercase tracking-widest">
-            Showing <span id="productCount" class="text-archive-text font-bold">0</span> Curated Items
-          </div>
+        <div class="flex justify-between items-end border-b border-archive-border pb-4 mb-8">
+          <input type="text" id="searchInput" placeholder="Search the archive..." 
+                 class="bg-transparent font-serif text-2xl focus:outline-none w-1/2">
+          <span class="text-[10px] font-sans text-gray-400 uppercase tracking-widest">
+            <span id="productCount">0</span> Items Listed
+          </span>
         </div>
-        
         <div id="productGrid"></div>
-        <div id="emptyState" class="text-center py-20 hidden">
-          <p class="text-archive-accent italic font-serif text-xl">The archive finds no record of that query.</p>
-        </div>
+        <div id="emptyState" class="hidden text-center py-20 italic text-gray-400">No items found in this section of the archive.</div>
       </section>
     </div>
 
-    <section id="aboutPage" class="hidden max-w-2xl mx-auto text-center font-serif py-12">
-       <h2 class="text-4xl mb-6 italic">Our Story</h2>
-       <p class="leading-relaxed text-lg text-gray-700">Specializing in Federation-era ceramics and timeless porcelain archives.</p>
-    </section>
-
   </main>
 
-  <footer class="border-t border-archive-border py-12 px-4 bg-white">
-    <div class="max-w-7xl mx-auto text-center space-y-4">
-      <div class="flex justify-center space-x-4">
-        <img src="logo.jpg" class="w-8 h-8 rounded-full grayscale opacity-50" alt="footer-logo">
-      </div>
-      <p class="text-[10px] text-gray-400 font-sans uppercase tracking-[0.3em]">
-        &copy; 2026 THE PLATE ARCHIVE CO. &bull; SYDNEY, AUSTRALIA
-      </p>
-    </div>
+  <footer class="py-10 border-t border-archive-border text-center bg-white">
+    <p class="text-[10px] text-gray-400 font-sans uppercase tracking-[0.3em]">
+      &copy; 2026 THE PLATE ARCHIVE CO. &bull; Sydney, NSW
+    </p>
   </footer>
 
   <script>
-    const state = { products: [], cart: {}, mode: 'customer', isAdminLoggedIn: false };
+    const state = { products: [], cart: {}, mode: 'customer', isAdmin: false };
 
-    // PAGE NAVIGATION
-    function showPage(pageId) {
-      document.getElementById('shopPage').classList.add('hidden');
-      document.getElementById('aboutPage').classList.add('hidden');
-      document.getElementById(pageId + 'Page').classList.remove('hidden');
-      window.scrollTo({top: 0, behavior: 'smooth'});
+    function setMode(mode) {
+      state.mode = mode;
+      document.getElementById('adminView').classList.toggle('hidden', mode !== 'admin');
+      document.getElementById('customerView').classList.toggle('hidden', mode === 'admin');
     }
 
-    // MODE SWITCHING
-    function setMode(newMode) {
-      state.mode = newMode;
-      document.getElementById('adminView').classList.toggle('hidden', newMode !== 'admin');
-      document.getElementById('customerView').classList.toggle('hidden', newMode === 'admin');
-    }
-
-    // AUTH HANDLERS
     function handleCredentialResponse(response) {
-      state.isAdminLoggedIn = true;
+      state.isAdmin = true;
       document.getElementById('modeToggle').classList.remove('hidden');
       document.getElementById('googleSignInContainer').classList.add('hidden');
       setMode('admin');
     }
 
     function handleSignOut() {
-      state.isAdminLoggedIn = false;
-      state.mode = 'customer';
+      state.isAdmin = false;
       document.getElementById('modeToggle').classList.add('hidden');
       document.getElementById('googleSignInContainer').classList.remove('hidden');
       setMode('customer');
@@ -182,7 +143,8 @@
         google.accounts.id.renderButton(document.getElementById('googleSignInContainer'), { theme: 'outline', size: 'medium' });
       }
     };
-  </script>
 
+    // The rest of your existing CSV and Cart Logic would go here
+  </script>
 </body>
 </html>
