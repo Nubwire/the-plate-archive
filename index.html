@@ -4,33 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta name="description" content="The Plate Archive Co. - Antique & Vintage Ceramic Plates, Teacups & Collectibles.">
-  <title>The Plate Archive Co. - Antique & Vintage Ceramic Plates & Collectibles</title>
+  <title>The Plate Archive Co. | Antique & Vintage Collectibles</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script>
-   tailwind.config = {
-  theme: {
-    extend: {
-      fontFamily: { 
-        serif: ['Cormorant Garamond', 'serif'], 
-        sans: ['Inter', 'sans-serif'] 
-      },
-      colors: {
-        archive: { 
-          bg: '#F7F3F0',      /* Warmer parchment background */
-          text: '#1a1a1a', 
-          accent: '#8c7b6b', 
-          border: '#e5e5e5', 
-          green: '#1b3c2e',  /* Deep forest green from your image */
-          gold: '#d4af37'    /* Antique gold */
-        }
-      }
-    }
-  }
-}
+
   <script>
     tailwind.config = {
       theme: {
@@ -43,665 +23,166 @@
       }
     }
   </script>
+
   <style>
     body { @apply bg-archive-bg text-archive-text font-serif antialiased; }
     .hidden { display: none !important; }
+    /* Mode Toggle styling - Hidden from customers */
+    .mode-toggle { @apply fixed top-4 right-4 z-[60] flex items-center space-x-3 bg-white border border-archive-border px-4 py-2 rounded shadow-lg font-sans text-xs transition-all; }
+    
+    /* Product Grid */
     #productGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
     @media (min-width: 768px) { #productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
     
-    /* Ensure the admin toggle is styled but hidden by default */
-    .mode-toggle { @apply fixed top-2 left-2 z-50 flex items-center space-x-2 bg-white/80 border border-archive-border px-2 py-1 rounded text-[10px] font-sans; }
+    /* Premium Hover Effect */
+    .hero-zoom { transition: transform 10s ease-out; }
+    .hero-container:hover .hero-zoom { transform: scale(1.1); }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
 
   <div class="mode-toggle hidden" id="modeToggle">
-    <span class="font-medium">Mode:</span>
-    <button id="adminBtn" class="font-bold text-archive-accent">Admin</button>
-    <span>/</span>
-    <button id="customerBtn" class="text-gray-500">Customer</button>
-    <button id="signOutBtn" onclick="handleSignOut()" class="ml-2 text-red-600 hover:underline">Sign Out</button>
+    <span class="font-medium text-gray-400">ARCHIVE TOOLS:</span>
+    <button id="adminBtn" class="font-bold text-archive-green hover:underline" onclick="setMode('admin')">ADMIN</button>
+    <span class="text-gray-300">|</span>
+    <button id="customerBtn" class="text-gray-500 hover:text-archive-green" onclick="setMode('customer')">VIEW SITE</button>
+    <button id="signOutBtn" onclick="handleSignOut()" class="ml-4 text-red-600 font-bold hover:underline">LOGOUT</button>
   </div>
 
-  <header class="border-b border-archive-border py-4 px-4 md:px-8 bg-white sticky top-0 z-40 shadow-sm">
+  <header class="border-b border-archive-border py-4 px-4 md:px-8 bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
       <div class="flex items-center space-x-4 cursor-pointer" onclick="showPage('shop')">
-        <img src="logo.jpg" class="w-12 h-12 rounded-full border border-archive-gold object-cover" onerror="this.src='https://via.placeholder.com/50?text=P'">
-        <div>
-          <h1 class="text-lg font-serif font-light tracking-widest uppercase text-archive-green leading-none">The Plate Archive</h1>
-          <p class="text-[8px] text-gray-400 font-sans uppercase tracking-[0.2em] mt-1">A Federation Collectibles Company</p>
+        <img src="logo.jpg" class="w-14 h-14 rounded-full border border-archive-gold object-cover shadow-sm" onerror="this.src='https://via.placeholder.com/60?text=P'">
+        <div class="hidden sm:block">
+          <h1 class="text-xl font-serif font-light tracking-[0.2em] uppercase text-archive-green leading-none">The Plate Archive</h1>
+          <p class="text-[9px] text-gray-400 font-sans uppercase tracking-[0.3em] mt-2">A Federation Collectibles Company</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-4">
         <div id="googleSignInContainer"></div>
-        <button id="googleSignInBtn" class="flex items-center gap-2 border border-gray-300 px-3 py-2 text-xs font-sans rounded-sm hover:bg-gray-50 transition-colors">
-          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Sign In
-        </button>
-
-        <button id="toggleCartBtn" class="bg-archive-green text-white px-4 py-2 rounded-sm text-xs font-sans uppercase tracking-widest hover:bg-black transition-all">
-          Cart (<span id="cartCount">0</span>)
+        
+        <button id="toggleCartBtn" class="bg-archive-green text-white px-6 py-2.5 rounded-sm text-xs font-sans uppercase tracking-widest hover:bg-black transition-all">
+          Manifest (<span id="cartCount">0</span>)
         </button>
       </div>
     </div>
   </header>
 
-  <section class="relative w-full h-[400px] flex items-center justify-center overflow-hidden border-b border-archive-gold/20">
-    <img src="hero.jpg" class="absolute inset-0 w-full h-full object-cover brightness-[0.7]" onerror="this.parentElement.style.backgroundColor='#1b3c2e'">
-    <div class="relative z-10 text-center text-white px-4">
-      <h2 class="text-4xl md:text-6xl font-serif italic mb-2">Timeless Elegance</h2>
-      <p class="text-archive-gold font-sans uppercase tracking-[0.4em] text-[10px]">Curating History, One Plate at a Time</p>
+  <section id="heroSection" class="hero-container relative w-full h-[500px] flex items-center justify-center overflow-hidden border-b border-archive-gold/20">
+    <img src="hero.jpg" class="hero-zoom absolute inset-0 w-full h-full object-cover brightness-[0.6]" onerror="this.parentElement.style.backgroundColor='#1b3c2e'">
+    <div class="relative z-10 text-center px-4">
+      <div class="mb-4 inline-block">
+        <span class="block h-px w-10 bg-archive-gold mx-auto mb-3"></span>
+        <h2 class="text-white text-5xl md:text-7xl font-serif italic font-light tracking-tight">Timeless Elegance</h2>
+        <span class="block h-px w-10 bg-archive-gold mx-auto mt-3"></span>
+      </div>
+      <p class="text-archive-gold font-sans uppercase tracking-[0.5em] text-[10px] md:text-xs">
+        Curating History, One Plate at a Time
+      </p>
     </div>
   </section>
-    
-    /* GRID LAYOUT */
-    #productGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
-    @media (min-width: 640px) { #productGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-    @media (min-width: 768px) { #productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-    @media (min-width: 1024px) { #productGrid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-    
-    /* PRODUCT CARD */
-    .product-card { 
-      @apply bg-white border border-archive-border p-4 transition-all duration-200 hover:shadow-lg flex flex-col;
-      min-height: 540px;
-    }
-    
-    /* Button */
-    .btn-add-cart { 
-      @apply w-full bg-archive-green text-white font-sans font-medium py-3 px-4 rounded-sm 
-             hover:bg-[#1a3c2f] transition-all duration-200 text-sm uppercase tracking-wide 
-             disabled:opacity-50 disabled:cursor-not-allowed mt-auto;
-    }
-    .btn-add-cart.in-cart { @apply bg-archive-accent hover:bg-[#7a6a5a]; }
-    
-    .mode-toggle { @apply fixed top-4 right-4 z-40 flex items-center space-x-2 bg-white border border-archive-border px-3 py-1.5 rounded shadow-sm font-sans text-xs; }
-    .upload-zone { @apply border-2 border-dashed border-archive-border rounded-lg p-8 text-center hover:border-archive-accent transition-colors cursor-pointer; }
-    .hidden { display: none !important; }
-    .fade-in { animation: fadeIn 0.3s ease-in; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    
-    /* Product Image */
-    .product-image-wrapper {
-      @apply relative bg-gray-50 mb-3 overflow-hidden rounded-sm;
-      aspect-ratio: 1 / 1;
-      max-height: 280px;
-    }
-    .product-main-image { 
-      @apply w-full h-full object-cover cursor-pointer transition-opacity duration-300;
-      max-height: 280px;
-    }
-    
-    /* Thumbnail Gallery - FORCE HORIZONTAL SCROLL */
-    .image-thumbnails {
-      display: flex !important;
-      flex-direction: row !important;
-      gap: 8px !important;
-      margin-top: 12px !important;
-      overflow-x: auto !important;
-      overflow-y: hidden !important;
-      white-space: nowrap !important;
-      padding-bottom: 6px !important;
-      width: 100% !important;
-      -webkit-overflow-scrolling: touch;
-    }
-    .image-thumbnails::-webkit-scrollbar { height: 4px; }
-    .image-thumbnails::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 2px; }
-    .image-thumbnails::-webkit-scrollbar-thumb { background: #8c7b6b; border-radius: 2px; }
-    
-    .thumbnail {
-      width: 56px !important;
-      height: 56px !important;
-      border: 2px solid #e5e5e5 !important;
-      border-radius: 4px !important;
-      cursor: pointer !important;
-      opacity: 0.6 !important;
-      transition: all 0.2s !important;
-      flex-shrink: 0 !important;
-      object-fit: cover !important;
-      display: inline-block !important;
-    }
-    .thumbnail:hover { opacity: 1 !important; }
-    .thumbnail.active { 
-      border-color: #2d5a4a !important; 
-      opacity: 1 !important;
-      box-shadow: 0 0 0 2px rgba(45, 90, 74, 0.2) !important;
-    }
-    
-    /* Stock Badge */
-    .stock-badge { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-sans font-medium; }
-    .stock-in { @apply bg-green-100 text-green-800; }
-    .stock-out { @apply bg-red-100 text-red-800; }
-    
-    /* Cart - FIXED WITH INLINE STYLE OVERRIDE */
-   #cart-tray {
-  position: fixed !important;
-  bottom: 16px !important;
-  right: 16px !important;
-  width: 360px !important;
-  max-height: 75vh !important;
-  background: white !important;
-  border: 1px solid #e5e5e5 !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important;
-  z-index: 100 !important;
-  display: none !important;
-  flex-direction: column !important;
-  border-radius: 4px !important;
-}
-#cart-tray.open { display: flex !important; }
 
-#cartItems {
-  max-height: 40vh;
-  overflow-y: auto;
-}
-
-#cartItems::-webkit-scrollbar {
-  width: 6px;
-}
-
-#cartItems::-webkit-scrollbar-track {
-  background: #f5f5f5;
-}
-
-#cartItems::-webkit-scrollbar-thumb {
-  background: #d1d1d1;
-  border-radius: 3px;
-}
-
-#cartItems::-webkit-scrollbar-thumb:hover {
-  background: #b8b8b8;
-}
-    
-    .google-signin-btn { @apply bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-sm hover:bg-gray-50 transition-colors font-sans text-sm flex items-center gap-2; }
-    .nav-link { @apply text-sm text-gray-600 hover:text-archive-green transition-colors; }
-    .page-content { @apply max-w-4xl mx-auto px-4 py-12; }
-    .page-title { @apply text-3xl font-light mb-6 text-center; }
-    .page-section { @apply mb-8; }
-    .page-section h3 { @apply text-xl font-medium mb-3 mt-6; }
-    .page-section p { @apply text-gray-700 leading-relaxed mb-4; }
-    .page-section ul { @apply list-disc list-inside text-gray-700 mb-4; }
-    .logo-container { @apply flex items-center space-x-3; }
-    .logo-badge { @apply w-10 h-10 rounded-full border-2 border-archive-gold flex items-center justify-center bg-archive-green; }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col">
-
-  <!-- Google Sign In Container -->
-  <div id="googleSignInContainer" class="hidden fixed top-4 right-4 z-50"></div>
-
-  <!-- Mode Toggle -->
-  <div class="mode-toggle hidden" id="modeToggle">
-    <span class="font-medium">Mode:</span>
-    <button id="adminBtn" class="font-bold text-archive-accent">Admin</button>
-    <span>/</span>
-    <button id="customerBtn" class="text-gray-500">Customer</button>
-    <button id="signOutBtn" class="ml-2 text-xs text-red-600 hover:underline">Sign Out</button>
-  </div>
-
-  <!-- Header -->
-  <header class="border-b border-archive-border py-4 px-4 md:px-8 bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-  <div class="max-w-7xl mx-auto flex justify-between items-center">
-    <div class="logo-container cursor-pointer flex items-center space-x-4" onclick="showPage('shop')">
-      <img src="TPALogo (1).jpg" class="w-12 h-12 rounded-full border border-archive-gold object-cover" alt="TPA Logo">
-      <div>
-        <h1 class="text-xl font-serif font-light tracking-widest uppercase">The Plate Archive</h1>
-        <p class="text-[9px] text-gray-500 font-sans uppercase tracking-[0.2em]">A Federation Collectibles Company</p>
-      </div>
-    </div>
-    
-    <div class="flex items-center space-x-6">
-      <nav class="hidden md:flex space-x-6 text-xs uppercase tracking-widest font-sans">
-        <button onclick="showPage('shop')" class="nav-link hover:text-archive-green">Shop</button>
-        <button onclick="showPage('about')" class="nav-link hover:text-archive-green">Our Story</button>
-        <button onclick="showPage('shipping')" class="nav-link hover:text-archive-green">Logistics</button>
-      </nav>
-      <button id="toggleCartBtn" class="flex items-center space-x-2 bg-archive-green text-white px-5 py-2 rounded-sm hover:bg-black transition-all duration-300 font-sans text-xs tracking-widest uppercase">
-        <span>Cart (<span id="cartCount">0</span>)</span>
-      </button>
-    </div>
-  </div>
-</header>
-
-<section id="hero" class="relative w-full h-[500px] flex items-center justify-center overflow-hidden border-b border-archive-gold/30">
-  <img src="ChatGPT Image Feb 13, 2026, 09_14_55 AM (1).jpg" 
-       class="absolute inset-0 w-full h-full object-cover brightness-[0.7] scale-105 hover:scale-100 transition-transform duration-[10s]" 
-       alt="The Plate Archive Collection">
-  
-  <div class="relative z-10 text-center px-6">
-    <div class="mb-6 inline-block">
-       <span class="block h-px w-12 bg-archive-gold mx-auto mb-4"></span>
-       <h2 class="text-white text-5xl md:text-7xl font-serif italic font-light tracking-tight">Timeless Elegance</h2>
-       <span class="block h-px w-12 bg-archive-gold mx-auto mt-4"></span>
-    </div>
-    <p class="text-archive-gold font-sans uppercase tracking-[0.4em] text-[10px] md:text-xs mb-8">
-      Curating History, One Plate at a Time
-    </p>
-    <button onclick="document.getElementById('customerView').scrollIntoView({behavior: 'smooth'})" 
-            class="border border-white/50 text-white px-8 py-3 font-sans text-xs uppercase tracking-widest hover:bg-white hover:text-archive-green transition-all duration-300">
-      Explore the Archive
-    </button>
-  </div>
-</section>
-
-  <!-- Navigation -->
-  <nav class="bg-white border-b border-archive-border py-3 px-4 md:px-8">
-    <div class="max-w-7xl mx-auto flex flex-wrap justify-center gap-6 text-sm font-sans">
-      <button onclick="showPage('shop')" class="nav-link font-medium" id="nav-shop">Shop All</button>
-      <button onclick="showPage('about')" class="nav-link" id="nav-about">About</button>
-      <button onclick="showPage('contact')" class="nav-link" id="nav-contact">Contact</button>
-      <button onclick="showPage('shipping')" class="nav-link" id="nav-shipping">Shipping</button>
-      <button onclick="showPage('returns')" class="nav-link" id="nav-returns">Returns</button>
-      <button onclick="showPage('privacy')" class="nav-link" id="nav-privacy">Privacy</button>
-      <button onclick="showPage('terms')" class="nav-link" id="nav-terms">Terms</button>
+  <nav class="bg-white border-b border-archive-border py-4 overflow-x-auto">
+    <div class="max-w-7xl mx-auto flex justify-center space-x-8 px-4 text-[11px] font-sans uppercase tracking-[0.2em] whitespace-nowrap">
+      <button onclick="showPage('shop')" class="hover:text-archive-green transition-colors">The Archive</button>
+      <button onclick="showPage('about')" class="hover:text-archive-green transition-colors">Our Story</button>
+      <button onclick="showPage('shipping')" class="hover:text-archive-green transition-colors">Logistics</button>
+      <button onclick="showPage('returns')" class="hover:text-archive-green transition-colors">Policies</button>
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <main class="flex-1 max-w-7xl mx-auto px-4 md:px-8 py-8 w-full">
+  <main class="flex-1 max-w-7xl mx-auto px-4 md:px-8 py-12 w-full">
     
-    <!-- SHOP PAGE -->
-    <section id="shopPage">
-      <!-- Admin Mode -->
-      <section id="adminView" class="hidden">
-        <div class="max-w-2xl mx-auto text-center py-16">
-          <h2 class="text-2xl font-light mb-2">Archive Initialization</h2>
-          <p class="text-gray-600 mb-8 font-sans text-sm">Upload your Stock Master CSV to populate the storefront.</p>
-          <div class="upload-zone" id="dropZone">
-            <input type="file" id="csvInput" accept=".csv" class="hidden" />
-            <div class="space-y-3">
-              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-              <p class="text-sm text-gray-600 font-sans"><label for="csvInput" class="font-medium text-archive-accent hover:underline cursor-pointer">Click to upload</label> or drag and drop</p>
-              <p class="text-xs text-gray-500 font-sans">Supports WooCommerce CSV • Auto-detects columns</p>
-            </div>
+    <div id="shopPage">
+      <section id="adminView" class="hidden py-12 border-2 border-dashed border-archive-gold/30 rounded-lg bg-white text-center mb-12">
+        <h3 class="text-2xl font-light mb-4">Master Inventory Upload</h3>
+        <input type="file" id="csvInput" accept=".csv" class="hidden" onchange="handleFileUpload(this.files[0])">
+        <label for="csvInput" class="inline-block bg-archive-green text-white px-8 py-3 rounded-sm cursor-pointer hover:bg-black transition-all font-sans text-xs uppercase tracking-widest">
+          Select Stock Master CSV
+        </label>
+        <p id="uploadStatus" class="mt-4 text-sm text-archive-accent italic"></p>
+      </section>
+
+      <section id="customerView">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-12 gap-6">
+          <input type="text" id="searchInput" placeholder="Search by pattern, era, or SKU..." 
+                 class="w-full md:w-96 border-b border-archive-border bg-transparent py-2 px-1 font-serif text-lg focus:outline-none focus:border-archive-gold transition-all">
+          <div class="text-[11px] text-gray-400 font-sans uppercase tracking-widest">
+            Showing <span id="productCount" class="text-archive-text font-bold">0</span> Curated Items
           </div>
-          <div id="uploadStatus" class="mt-6 text-sm font-sans hidden"></div>
-          <div id="debugInfo" class="mt-4 text-xs text-gray-400 font-sans hidden"></div>
         </div>
-      </section>
-
-      <!-- Customer Mode -->
-      <section id="customerView" class="hidden">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-          <input type="text" id="searchInput" placeholder="Search by name, pattern, SKU..." class="input-field md:w-80 border border-archive-border p-3 rounded-sm font-sans text-sm focus:outline-none focus:border-archive-green">
-          <div class="text-sm text-gray-500 font-sans"><span id="productCount">0</span> items loaded</div>
-        </div>
+        
         <div id="productGrid"></div>
-        <div id="emptyState" class="text-center py-16 hidden"><p class="text-gray-500 font-sans">No items match your search.</p></div>
+        <div id="emptyState" class="text-center py-20 hidden">
+          <p class="text-archive-accent italic font-serif text-xl">The archive finds no record of that query.</p>
+        </div>
       </section>
-    </section>
+    </div>
 
-    <!-- Other Pages -->
-    <section id="aboutPage" class="page-content hidden"><h2 class="page-title">About</h2><div class="page-section"><p>Curated collection of antique ceramics.</p></div></section>
-    <section id="contactPage" class="page-content hidden"><h2 class="page-title">Contact</h2><div class="page-section"><p>Email: info@theplatearchive.co</p></div></section>
-    <section id="shippingPage" class="page-content hidden"><h2 class="page-title">Shipping</h2><div class="page-section"><p>Worldwide shipping available.</p></div></section>
-    <section id="returnsPage" class="page-content hidden"><h2 class="page-title">Returns</h2><div class="page-section"><p>14-day return policy.</p></div></section>
-    <section id="privacyPage" class="page-content hidden"><h2 class="page-title">Privacy</h2><div class="page-section"><p>We protect your data.</p></div></section>
-    <section id="termsPage" class="page-content hidden"><h2 class="page-title">Terms</h2><div class="page-section"><p>Terms of service.</p></div></section>
+    <section id="aboutPage" class="hidden max-w-2xl mx-auto text-center font-serif py-12">
+       <h2 class="text-4xl mb-6 italic">Our Story</h2>
+       <p class="leading-relaxed text-lg text-gray-700">Specializing in Federation-era ceramics and timeless porcelain archives.</p>
+    </section>
 
   </main>
 
-<!-- Cart Tray -->
-
-<div id="cart-tray">
-  <div class="p-4 border-b border-archive-border flex justify-between items-center bg-archive-bg">
-    <div>
-      <h3 class="font-medium text-sm">Selection Manifest</h3>
-      <p class="text-xs text-gray-500 mt-0.5" id="cartItemCount">0 items</p>
-    </div>
-    <button id="closeCartBtn" class="text-gray-500 text-xl hover:text-archive-text">&times;</button>
-  </div>
-  
-  <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-  
-  <div class="p-4 border-t border-archive-border bg-archive-bg space-y-3">
-    <!-- Order Total -->
-    <div class="flex justify-between items-center pt-2">
-      <span class="text-sm font-medium text-gray-700">Subtotal</span>
-      <span class="text-lg font-bold text-archive-green" id="cartTotal">$0.00</span>
-    </div>
-    <p class="text-xs text-gray-500">Shipping calculated at checkout</p>
-    
-    <!-- Action Buttons -->
-    <button id="exportBtn" class="btn-add-cart w-full text-sm">
-      Export Manifest.txt
-    </button>
-    <button id="clearCartBtn" class="w-full text-xs text-gray-500 hover:text-red-600 font-sans underline transition-colors">
-      Clear Selection
-    </button>
-  </div>
-</div>
-
-  <!-- Footer -->
-  <footer class="border-t border-archive-border py-8 px-4 md:px-8 mt-auto bg-white">
-    <div class="max-w-7xl mx-auto text-center text-xs text-gray-500">
-      <p>&copy; <span id="year">2026</span> The Plate Archive Co. — A Federation Collectibles Company</p>
+  <footer class="border-t border-archive-border py-12 px-4 bg-white">
+    <div class="max-w-7xl mx-auto text-center space-y-4">
+      <div class="flex justify-center space-x-4">
+        <img src="logo.jpg" class="w-8 h-8 rounded-full grayscale opacity-50" alt="footer-logo">
+      </div>
+      <p class="text-[10px] text-gray-400 font-sans uppercase tracking-[0.3em]">
+        &copy; 2026 THE PLATE ARCHIVE CO. &bull; SYDNEY, AUSTRALIA
+      </p>
     </div>
   </footer>
 
   <script>
-    // ==================== STATE ====================
-    const state = { products: [], cart: {}, mode: 'customer', searchTerm: '', currentPage: 'shop', isAdminLoggedIn: false };
-    document.getElementById('year').textContent = new Date().getFullYear();
+    const state = { products: [], cart: {}, mode: 'customer', isAdminLoggedIn: false };
 
-    // ==================== GOOGLE AUTH ====================
-    let googleUser = null;
-    function handleCredentialResponse(response) { googleUser = response.credential; state.isAdminLoggedIn = true; showAdminControls(); }
-    function showAdminControls() {
-      document.getElementById('googleSignInBtn').classList.add('hidden');
+    // PAGE NAVIGATION
+    function showPage(pageId) {
+      document.getElementById('shopPage').classList.add('hidden');
+      document.getElementById('aboutPage').classList.add('hidden');
+      document.getElementById(pageId + 'Page').classList.remove('hidden');
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    // MODE SWITCHING
+    function setMode(newMode) {
+      state.mode = newMode;
+      document.getElementById('adminView').classList.toggle('hidden', newMode !== 'admin');
+      document.getElementById('customerView').classList.toggle('hidden', newMode === 'admin');
+    }
+
+    // AUTH HANDLERS
+    function handleCredentialResponse(response) {
+      state.isAdminLoggedIn = true;
       document.getElementById('modeToggle').classList.remove('hidden');
-      document.getElementById('toggleCartBtn').classList.remove('hidden');
-      if (state.mode === 'admin') { document.getElementById('adminView').classList.remove('hidden'); document.getElementById('customerView').classList.add('hidden'); }
+      document.getElementById('googleSignInContainer').classList.add('hidden');
+      setMode('admin');
     }
+
     function handleSignOut() {
-      googleUser = null; state.isAdminLoggedIn = false; state.mode = 'customer';
-      document.getElementById('googleSignInBtn').classList.remove('hidden');
+      state.isAdminLoggedIn = false;
+      state.mode = 'customer';
       document.getElementById('modeToggle').classList.add('hidden');
-      document.getElementById('adminView').classList.add('hidden');
-      document.getElementById('customerView').classList.remove('hidden');
-      renderGrid();
+      document.getElementById('googleSignInContainer').classList.remove('hidden');
+      setMode('customer');
     }
+
     window.onload = function() {
-      if (window.google && google.accounts) {
-        google.accounts.id.initialize({ client_id: '167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com', callback: handleCredentialResponse });
-        google.accounts.id.renderButton(document.getElementById('googleSignInContainer'), { theme: 'outline', size: 'large', width: 200 });
+      if (window.google) {
+        google.accounts.id.initialize({ 
+          client_id: '167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com', 
+          callback: handleCredentialResponse 
+        });
+        google.accounts.id.renderButton(document.getElementById('googleSignInContainer'), { theme: 'outline', size: 'medium' });
       }
     };
-
-    // ==================== PAGE NAVIGATION ====================
-    function showPage(pageName) {
-      ['shopPage','aboutPage','contactPage','shippingPage','returnsPage','privacyPage','termsPage'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('font-medium', 'text-archive-green'));
-      if (pageName === 'shop') {
-        document.getElementById('shopPage').classList.remove('hidden');
-        if (state.isAdminLoggedIn) document.getElementById('modeToggle').classList.remove('hidden');
-        if (state.mode === 'customer') renderGrid();
-      } else { document.getElementById(pageName + 'Page').classList.remove('hidden'); document.getElementById('modeToggle').classList.add('hidden'); window.scrollTo(0, 0); }
-      const navLink = document.getElementById('nav-' + pageName);
-      if (navLink) navLink.classList.add('font-medium', 'text-archive-green');
-      state.currentPage = pageName;
-    }
-
-    // ==================== COLUMN MAPPING ====================
-    const COLUMN_MAP = {
-      name: ['name', 'title', 'item'], sku: ['sku', 'id', 'reference'],
-      price: ['price', 'value', 'cost', 'regular price (usd)', 'regular price'],
-      image: ['images', 'image', 'url', 'wordpress media url 1'],
-      stock: ['stock', 'qty', 'inventory', 'stock qty'],
-      wpImage1: ['wordpress media url 1', 'wp media url 1'],
-      wpImage2: ['wordpress media url 2', 'wp media url 2'],
-      wpImage3: ['wordpress media url 3', 'wp media url 3'],
-      pattern: ['pattern name', 'pattern'], era: ['era / year made', 'era', 'year made'],
-      origin: ['country of origin', 'origin', 'country'], condition: ['condition'],
-      conditionNotes: ['condition notes', 'notes']
-    };
-
-    function findColumn(headers, variations) {
-      const cleanedHeaders = headers.map((h, idx) => ({ original: h, cleaned: (h || '').toString().toLowerCase().trim(), index: idx }));
-      for (const variation of variations) {
-        const target = variation.toLowerCase().trim();
-        const match = cleanedHeaders.find(h => h.cleaned === target);
-        if (match) return headers[match.index];
-      }
-      return null;
-    }
-
-    // ==================== IMAGE PROCESSING - FIXED DEDUPLICATION ====================
-    function processImageUrl(url) {
-      if (!url || typeof url !== 'string') return null;
-      let imageUrl = url.split(',')[0].trim();
-      if (!imageUrl || imageUrl === '#REF!' || imageUrl === '') return null;
-      
-      // Google Drive thumbnail conversion
-      const driveMatch = imageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-      if (driveMatch && driveMatch[1]) {
-        return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w800`;
-      }
-      if (imageUrl.startsWith('http')) return imageUrl;
-      return null;
-    }
-
-    function getAllProductImages(row, headers) {
-      // Use Set to automatically deduplicate
-      const uniqueUrls = new Set();
-      
-      // ONLY check WordPress Media URL columns (columns 38, 39, 40 in your CSV)
-      // DO NOT check Images column (column 23) - it's empty or has #REF!
-      const wpColumns = [
-        findColumn(headers, COLUMN_MAP.wpImage1),
-        findColumn(headers, COLUMN_MAP.wpImage2),
-        findColumn(headers, COLUMN_MAP.wpImage3)
-      ];
-      
-      wpColumns.forEach(col => {
-        if (col && row[col]?.toString().trim()) {
-          const url = row[col].trim();
-          if (url && url !== '#REF!' && url.startsWith('http')) {
-            const processed = processImageUrl(url);
-            if (processed) uniqueUrls.add(processed);
-          }
-        }
-      });
-      
-      // Convert Set to array
-      const result = Array.from(uniqueUrls);
-      console.log('🖼️ Images found:', result.length, result); // Debug log
-      return result;
-    }
-
-    // ==================== CSV PARSING ====================
-    function isDocumentationRow(row) {
-      const patterns = ['WOOCOMMERCE IMPORT', 'STORE MANAGEMENT', 'HOW TO IMPORT', 'IMAGE WORKFLOW', 'GOLDEN RULES', 'CONDITION GRADE'];
-      for (const value of Object.values(row)) { if (value && patterns.some(p => value.toString().toUpperCase().includes(p))) return true; }
-      return false;
-    }
-    function isEmptyRow(row) { return Object.values(row).every(v => !v || v.toString().trim() === '' || v.toString().trim() === '#REF!'); }
-    function hasValidSKU(row, skuCol) { if (!skuCol || !row[skuCol]) return false; const sku = row[skuCol].toString().trim(); return /^[A-Z0-9]{2,4}-[A-Z0-9]{2,6}-[A-Z0-9]{2,4}-\d{3}$/.test(sku); }
-    
-    function normalizeProduct(row, headers) {
-      const nameCol = findColumn(headers, COLUMN_MAP.name), skuCol = findColumn(headers, COLUMN_MAP.sku);
-      if (!nameCol || !skuCol) return null;
-      const priceCol = findColumn(headers, COLUMN_MAP.price), stockCol = findColumn(headers, COLUMN_MAP.stock);
-      const price = parseFloat((row[priceCol] || '0').toString().replace(/[^0-9.]/g, '')) || 0;
-      const stock = parseInt((row[stockCol] || '0').toString().replace(/[^0-9]/g, '')) || 0;
-      const allImages = getAllProductImages(row, headers);
-      
-      return {
-        name: row[nameCol]?.toString().trim() || 'Untitled', sku: row[skuCol]?.toString().trim(),
-        price: price, priceFormatted: price > 0 ? `$${price.toFixed(2)}` : 'Contact',
-        image: allImages.length > 0 ? allImages[0] : 'https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image',
-        images: allImages, stock: stock, inStock: stock > 0,
-        pattern: row[findColumn(headers, COLUMN_MAP.pattern)]?.toString().trim() || '',
-        era: row[findColumn(headers, COLUMN_MAP.era)]?.toString().trim() || '',
-        origin: row[findColumn(headers, COLUMN_MAP.origin)]?.toString().trim() || '',
-        condition: row[findColumn(headers, COLUMN_MAP.condition)]?.toString().trim() || '',
-        conditionNotes: row[findColumn(headers, COLUMN_MAP.conditionNotes)]?.toString().trim() || ''
-      };
-    }
-
-    // ==================== FILE UPLOAD ====================
-    async function handleFileUpload(file) {
-      const status = document.getElementById('uploadStatus');
-      const debug = document.getElementById('debugInfo');
-      status.classList.remove('hidden'); status.textContent = 'Reading file...'; status.className = 'mt-6 text-sm font-sans text-gray-600';
-      debug.classList.add('hidden');
-      
-      try {
-        const text = await file.text();
-        Papa.parse(text, { header: true, skipEmptyLines: true, complete: (results) => {
-          const headers = Object.keys(results.data[0] || {}), skuCol = findColumn(headers, COLUMN_MAP.sku);
-          debug.textContent = `Headers found: ${headers.length} | SKU column: ${skuCol || 'NOT FOUND'}`;
-          debug.classList.remove('hidden');
-          
-          const filtered = results.data.filter(row => { if (isDocumentationRow(row)) return false; if (isEmptyRow(row)) return false; if (!hasValidSKU(row, skuCol)) return false; return true; });
-          const products = filtered.map(row => normalizeProduct(row, headers)).filter(p => p && p.name && p.sku);
-          
-          if (!products.length) { status.textContent = `✗ Error: No valid products found. Total: ${results.data.length}, Valid: ${filtered.length}`; status.className = 'mt-6 text-sm font-sans text-red-600'; return; }
-          
-          state.products = products;
-          status.textContent = `✓ Successfully loaded ${products.length} items. Switch to Customer mode to view.`;
-          status.className = 'mt-6 text-sm font-sans text-green-700';
-          debug.textContent += ` | Products: ${products.length}`;
-        }, error: (err) => { status.textContent = `✗ Parse Error: ${err.message}`; status.className = 'mt-6 text-sm font-sans text-red-600'; }});
-      } catch (err) { status.textContent = `✗ Error: ${err.message}`; status.className = 'mt-6 text-sm font-sans text-red-600'; }
-    }
-
-    // ==================== RENDER - FIXED LAYOUT ====================
-    function renderGrid() {
-      const term = state.searchTerm.toLowerCase();
-      const filtered = state.products.filter(p => p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term) || p.pattern?.toLowerCase().includes(term) || p.era?.toLowerCase().includes(term));
-      document.getElementById('productCount').textContent = filtered.length;
-      document.getElementById('emptyState').classList.toggle('hidden', filtered.length > 0);
-      if (filtered.length === 0) { document.getElementById('productGrid').innerHTML = ''; return; }
-      
-      document.getElementById('productGrid').innerHTML = filtered.map(p => {
-        const inCart = state.cart[p.sku], qty = inCart ? inCart.quantity : 0;
-        const imageCount = p.images ? p.images.length : 0;
-        
-        // Generate thumbnail HTML - ONLY if we have 2+ unique images
-        let thumbnailsHTML = '';
-        if (imageCount >= 2) {
-          thumbnailsHTML = '<div class="image-thumbnails">';
-          p.images.forEach((img, idx) => {
-            thumbnailsHTML += `<img src="${img}" class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="changeImage('${img}', '${p.sku}')" alt="View ${idx + 1}">`;
-          });
-          thumbnailsHTML += '</div>';
-        }
-        
-        return `<div class="product-card fade-in" data-sku="${p.sku}">
-          <div class="product-image-wrapper">
-            <img src="${p.image}" alt="${p.name}" class="product-main-image" id="main-img-${p.sku}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/fafafa/1a1a1a?text=No+Image'">
-            ${imageCount >= 2 ? '<div class="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full font-sans">' + imageCount + ' photos</div>' : ''}
-          </div>
-          ${thumbnailsHTML}
-          <h3 class="font-medium text-base mb-1 leading-tight line-clamp-2 mt-3">${p.name}</h3>
-          ${p.pattern ? `<p class="text-xs text-archive-accent mb-2 font-sans uppercase tracking-wide">${p.pattern}</p>` : ''}
-          <p class="text-xs text-gray-500 font-sans mb-3">SKU: ${p.sku}</p>
-          <div class="flex justify-between items-center mb-4">
-            <span class="font-medium text-lg">${p.priceFormatted}</span>
-            ${p.inStock ? `<span class="stock-badge stock-in">✓ ${p.stock} in stock</span>` : `<span class="stock-badge stock-out">Out of stock</span>`}
-          </div>
-          <button class="btn-add-cart ${qty > 0 ? 'in-cart' : ''}" onclick="addToCart('${p.sku}'); event.stopPropagation();" ${!p.inStock ? 'disabled' : ''}>
-            ${qty > 0 ? `✓ Added to Cart (${qty})` : 'Add to Cart'}
-          </button>
-        </div>`;
-      }).join('');
-    }
-
-    function changeImage(imageUrl, sku) {
-      const mainImg = document.getElementById(`main-img-${sku}`);
-      if (mainImg) { mainImg.style.opacity = '0'; setTimeout(() => { mainImg.src = imageUrl; mainImg.style.opacity = '1'; }, 150); }
-      const card = document.querySelector(`[data-sku="${sku}"]`);
-      if (card) { card.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active')); event.target.classList.add('active'); }
-    }
-
-    function renderCart() {
-  const items = Object.values(state.cart);
-  const count = items.reduce((s, i) => s + i.quantity, 0);
-  const total = items.reduce((s, i) => s + (i.product.price * i.quantity), 0);
-  
-  document.getElementById('cartCount').textContent = count;
-  document.getElementById('cartItemCount').textContent = `${count} item${count !== 1 ? 's' : ''}`;
-  document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
-  
-  if (items.length === 0) { 
-    document.getElementById('cartItems').innerHTML = '<p class="text-center text-gray-500 py-8 font-sans text-sm">No items selected</p>'; 
-    return; 
-  }
-  
-  document.getElementById('cartItems').innerHTML = items.map(i => `<div class="flex justify-between items-start py-3 border-b border-archive-border last:border-0">
-    <div class="flex-1 pr-3">
-      <p class="font-medium text-sm leading-tight mb-1">${i.product.name}</p>
-      <p class="text-xs text-gray-500 font-sans">SKU: ${i.product.sku}</p>
-      <p class="text-xs text-archive-green font-medium mt-0.5">$${i.product.price.toFixed(2)} each</p>
-    </div>
-    <div class="flex items-center gap-1.5 bg-gray-50 rounded px-2 py-1">
-      <button class="w-6 h-6 flex items-center justify-center text-gray-600 hover:bg-gray-200 rounded transition-colors text-sm font-medium" onclick="updateCartQty('${i.product.sku}', -1)">−</button>
-      <span class="w-6 text-center text-sm font-sans font-medium">${i.quantity}</span>
-      <button class="w-6 h-6 flex items-center justify-center text-gray-600 hover:bg-gray-200 rounded transition-colors text-sm font-medium" onclick="updateCartQty('${i.product.sku}', 1)">+</button>
-    </div>
-  </div>
-  <div class="flex justify-end pb-2">
-    <span class="text-xs text-gray-600">Subtotal: <span class="font-medium">$${(i.product.price * i.quantity).toFixed(2)}</span></span>
-  </div>`).join('');
-}
-
-    // ==================== CART - FIXED TOGGLE ====================
-    function addToCart(sku) {
-      const product = state.products.find(p => p.sku === sku);
-      if (!product || !product.inStock) return;
-      if (!state.cart[sku]) state.cart[sku] = { product, quantity: 0 };
-      if (state.cart[sku].quantity >= product.stock) { alert('Max stock reached'); return; }
-      state.cart[sku].quantity++; renderCart(); renderGrid(); openCart();
-    }
-    function updateCartQty(sku, delta) {
-      if (!state.cart[sku]) return;
-      const newQty = state.cart[sku].quantity + delta;
-      if (newQty <= 0) { delete state.cart[sku]; } else if (newQty <= state.cart[sku].product.stock) { state.cart[sku].quantity = newQty; }
-      renderCart(); renderGrid();
-    }
-    function openCart() { 
-      const cart = document.getElementById('cart-tray');
-      cart.style.display = 'flex'; // Force display
-      cart.classList.add('open');
-    }
-    function closeCart() { 
-      const cart = document.getElementById('cart-tray');
-      cart.style.display = 'none';
-      cart.classList.remove('open');
-    }
-
-    // ==================== MODE TOGGLE ====================
-    function setMode(mode) {
-      state.mode = mode;
-      const adminView = document.getElementById('adminView'), customerView = document.getElementById('customerView');
-      const adminBtn = document.getElementById('adminBtn'), customerBtn = document.getElementById('customerBtn'), cartBtn = document.getElementById('toggleCartBtn');
-      if (mode === 'admin') {
-        adminView.classList.remove('hidden'); customerView.classList.add('hidden'); cartBtn.classList.add('hidden');
-        adminBtn.classList.add('font-bold', 'text-archive-accent'); adminBtn.classList.remove('text-gray-500');
-        customerBtn.classList.remove('font-bold', 'text-archive-accent'); customerBtn.classList.add('text-gray-500');
-      } else {
-        adminView.classList.add('hidden'); customerView.classList.remove('hidden'); cartBtn.classList.remove('hidden');
-        customerBtn.classList.add('font-bold', 'text-archive-accent'); customerBtn.classList.remove('text-gray-500');
-        adminBtn.classList.remove('font-bold', 'text-archive-accent'); adminBtn.classList.add('text-gray-500');
-        renderGrid(); renderCart();
-      }
-    }
-
-    // ==================== EXPORT ====================
-    function exportManifest() {
-      const items = Object.values(state.cart);
-      if (!items.length) { alert('No items selected'); return; }
-      let content = `THE PLATE ARCHIVE CO. — SELECTION MANIFEST\nGenerated: ${new Date().toLocaleString()}\n${'='.repeat(60)}\n\n`;
-      let total = 0;
-      items.forEach(i => { const lineTotal = i.product.price * i.quantity; total += lineTotal; content += `SKU: ${i.product.sku}\nItem: ${i.product.name}\nQty: ${i.quantity}\nPrice: ${i.product.priceFormatted}\nSubtotal: $${lineTotal.toFixed(2)}\n${'-'.repeat(40)}\n`; });
-      content += `\nGRAND TOTAL: $${total.toFixed(2)}\n\nThank you.\nThe Plate Archive Co.`;
-      const blob = new Blob([content], { type: 'text/plain' }), a = document.createElement('a');
-      a.href = URL.createObjectURL(blob); a.download = `PlateArchive_Manifest_${new Date().toISOString().slice(0,19).replace(/[:.]/g,'-')}.txt`; a.click();
-    }
-
-    // ==================== EVENTS ====================
-    document.getElementById('csvInput').addEventListener('change', e => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); });
-    document.getElementById('dropZone').addEventListener('click', () => document.getElementById('csvInput').click());
-    document.getElementById('dropZone').addEventListener('dragover', e => { e.preventDefault(); this.classList.add('border-archive-accent'); });
-    document.getElementById('dropZone').addEventListener('dragleave', e => { e.preventDefault(); this.classList.remove('border-archive-accent'); });
-    document.getElementById('dropZone').addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFileUpload(e.dataTransfer.files[0]); });
-    document.getElementById('searchInput').addEventListener('input', e => { state.searchTerm = e.target.value.trim(); renderGrid(); });
-    document.getElementById('adminBtn').addEventListener('click', () => setMode('admin'));
-    document.getElementById('customerBtn').addEventListener('click', () => setMode('customer'));
-    document.getElementById('toggleCartBtn').addEventListener('click', openCart);
-    document.getElementById('closeCartBtn').addEventListener('click', closeCart);
-    document.getElementById('exportBtn').addEventListener('click', exportManifest);
-    document.getElementById('clearCartBtn').addEventListener('click', () => { state.cart = {}; renderCart(); renderGrid(); closeCart(); });
-    document.getElementById('signOutBtn').addEventListener('click', handleSignOut);
-    document.getElementById('googleSignInBtn').addEventListener('click', () => { if (window.google && google.accounts.id) google.accounts.id.prompt(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
-
-    // Initialize
-    setMode('customer'); showPage('shop');
-    console.log('✓ The Plate Archive Co. initialized');
   </script>
+
 </body>
-
 </html>
-
-
