@@ -179,27 +179,49 @@
   </div>
 
   <!-- Header -->
-  <header class="border-b border-archive-border py-4 px-4 md:px-8 bg-white sticky top-0 z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div class="logo-container cursor-pointer" onclick="showPage('shop')">
-        <div class="logo-badge"><span class="text-archive-gold text-xl font-serif italic">P</span></div>
-        <div>
-          <h1 class="text-xl font-serif font-light tracking-wide">The Plate Archive</h1>
-          <p class="text-[10px] text-gray-500 font-sans uppercase tracking-wider">A Federation Collectibles Company</p>
-        </div>
-      </div>
-      <div class="flex items-center space-x-4">
-        <button id="googleSignInBtn" class="google-signin-btn">
-          <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Sign In
-        </button>
-        <button id="toggleCartBtn" class="hidden flex items-center space-x-2 bg-archive-green text-white px-4 py-2 rounded-sm hover:bg-[#1a3c2f] transition-colors font-sans text-sm">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-          <span>Cart (<span id="cartCount">0</span>)</span>
-        </button>
+  <header class="border-b border-archive-border py-4 px-4 md:px-8 bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="logo-container cursor-pointer flex items-center space-x-4" onclick="showPage('shop')">
+      <img src="TPALogo (1).jpg" class="w-12 h-12 rounded-full border border-archive-gold object-cover" alt="TPA Logo">
+      <div>
+        <h1 class="text-xl font-serif font-light tracking-widest uppercase">The Plate Archive</h1>
+        <p class="text-[9px] text-gray-500 font-sans uppercase tracking-[0.2em]">A Federation Collectibles Company</p>
       </div>
     </div>
-  </header>
+    
+    <div class="flex items-center space-x-6">
+      <nav class="hidden md:flex space-x-6 text-xs uppercase tracking-widest font-sans">
+        <button onclick="showPage('shop')" class="nav-link hover:text-archive-green">Shop</button>
+        <button onclick="showPage('about')" class="nav-link hover:text-archive-green">Our Story</button>
+        <button onclick="showPage('shipping')" class="nav-link hover:text-archive-green">Logistics</button>
+      </nav>
+      <button id="toggleCartBtn" class="flex items-center space-x-2 bg-archive-green text-white px-5 py-2 rounded-sm hover:bg-black transition-all duration-300 font-sans text-xs tracking-widest uppercase">
+        <span>Cart (<span id="cartCount">0</span>)</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section id="hero" class="relative w-full h-[500px] flex items-center justify-center overflow-hidden border-b border-archive-gold/30">
+  <img src="ChatGPT Image Feb 13, 2026, 09_14_55 AM (1).jpg" 
+       class="absolute inset-0 w-full h-full object-cover brightness-[0.7] scale-105 hover:scale-100 transition-transform duration-[10s]" 
+       alt="The Plate Archive Collection">
+  
+  <div class="relative z-10 text-center px-6">
+    <div class="mb-6 inline-block">
+       <span class="block h-px w-12 bg-archive-gold mx-auto mb-4"></span>
+       <h2 class="text-white text-5xl md:text-7xl font-serif italic font-light tracking-tight">Timeless Elegance</h2>
+       <span class="block h-px w-12 bg-archive-gold mx-auto mt-4"></span>
+    </div>
+    <p class="text-archive-gold font-sans uppercase tracking-[0.4em] text-[10px] md:text-xs mb-8">
+      Curating History, One Plate at a Time
+    </p>
+    <button onclick="document.getElementById('customerView').scrollIntoView({behavior: 'smooth'})" 
+            class="border border-white/50 text-white px-8 py-3 font-sans text-xs uppercase tracking-widest hover:bg-white hover:text-archive-green transition-all duration-300">
+      Explore the Archive
+    </button>
+  </div>
+</section>
 
   <!-- Navigation -->
   <nav class="bg-white border-b border-archive-border py-3 px-4 md:px-8">
@@ -621,3 +643,4 @@
 </body>
 
 </html>
+
