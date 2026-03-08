@@ -1,937 +1,725 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta name="description" content="The Plate Archive Co. - Antique & Vintage Ceramic Plates, Teacups & Collectibles. Securely curated and shipped worldwide.">
-  <meta name="keywords" content="antique plates, vintage ceramics, teacups, collectibles, federation collectibles, royal crown derby, spode">
   <meta property="og:title" content="The Plate Archive Co. | Curated Antique Ceramics">
-  <meta property="og:description" content="Discover a meticulously curated collection of rare, antique, and vintage ceramic plates.">
   <meta property="og:image" content="https://theplatearchive.co/hero.jpg">
   <meta property="og:url" content="https://theplatearchive.co">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://theplatearchive.co/">
   <title>The Plate Archive Co. - Antique & Vintage Ceramic Plates & Collectibles</title>
-
-  <!-- Generic Organization/WebSite JSON-LD Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "The Plate Archive Co.",
-    "url": "https://theplatearchive.co",
-    "description": "Antique & Vintage Ceramic Plates & Collectibles",
-    "publisher": {
-      "@type": "Organization",
-      "name": "Federation Collectibles Company"
-    }
-  }
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- Modern premium fonts -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"The Plate Archive Co.","url":"https://theplatearchive.co","description":"Antique & Vintage Ceramic Plates & Collectibles","potentialAction":{"@type":"SearchAction","target":"https://theplatearchive.co/?q={search_term_string}","query-input":"required name=search_term_string"},"publisher":{"@type":"Organization","name":"Federation Collectibles Company"}}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            serif: ['"Playfair Display"', 'serif'],
-            sans: ['Lato', 'sans-serif']
-          },
-          colors: {
-            archive: {
-              bg: '#fdfbf7', // Ivory / soft warm beige
-              text: '#1a1a1a', // Charcoal
-              accent: '#d4af37', // Gold
-              border: '#e5e0d8', // Warmer border
-              green: '#2c4c3b', // Deep forest/sage green
-              greenHover: '#1e3629',
-              lightGreen: '#eef3f0'
-            }
-          },
-          boxShadow: {
-            'premium': '0 10px 40px -10px rgba(0,0,0,0.08)',
-            'premium-hover': '0 20px 40px -10px rgba(0,0,0,0.12)'
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    body { @apply bg-archive-bg text-archive-text font-serif antialiased overflow-x-hidden; }
-    
-    /* GLASSMORPHISM HEADER */
-    .glass-header {
-      background: rgba(253, 251, 247, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(229, 224, 216, 0.5);
-    }
-    
-    /* HERO SECTION */
-    .hero-bg {
-      background: linear-gradient(rgba(44, 76, 59, 0.7), rgba(44, 76, 59, 0.85)), url('./hero.jpg') center/cover;
-    }
+    :root{--bg:#fdfbf7;--text:#1a1a1a;--accent:#d4af37;--border:#e5e0d8;--green:#2c4c3b;--green-h:#1e3629;--green-lt:#eef3f0;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g400:#9ca3af;--g500:#6b7280;--red:#ef4444;--serif:'Playfair Display',serif;--sans:'Lato',sans-serif;--sh:0 10px 40px -10px rgba(0,0,0,.08);--shh:0 22px 50px -10px rgba(0,0,0,.15);--r:1rem;--rl:1.25rem}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--serif);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+    img{display:block;max-width:100%}
+    button{cursor:pointer;background:none;border:none;font-family:inherit}
+    input{font-family:inherit}
+    .hidden{display:none!important}
+    .fade-in{animation:fi .5s ease-out forwards;opacity:0}
+    @keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-    /* GRID LAYOUT */
-    #productGrid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 2rem; }
-    @media (min-width: 640px) { #productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (min-width: 768px) { #productGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-    @media (min-width: 1024px) { #productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2.5rem; } }
-    
+    /* ANNOUNCEMENT */
+    .ann{background:var(--text);color:var(--bg);padding:8px 16px;text-align:center;font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden}
+    .ann::after{content:'';position:absolute;bottom:0;left:50%;right:50%;height:1px;background:var(--accent);transition:left .5s,right .5s}
+    .ann:hover::after{left:0;right:0}
+
+    /* HEADER */
+    .site-header{position:sticky;top:0;z-index:50;background:rgba(253,251,247,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(229,224,216,.6)}
+    .hdr{max-width:1400px;margin:0 auto;padding:10px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    @media(min-width:1024px){.hdr{padding:10px 48px}}
+    .burger{display:flex;align-items:center;padding:6px;margin-left:-6px;color:var(--text)}
+    .burger svg{width:24px;height:24px}
+    @media(min-width:768px){.burger{display:none}}
+    .logo{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0}
+    .logo-img{height:64px;width:auto;object-fit:contain;mix-blend-mode:multiply;transition:transform .3s}
+    .logo:hover .logo-img{transform:scale(1.05)}
+    .logo-fb{display:none;align-items:center;gap:10px}
+    .logo-badge{width:46px;height:46px;border-radius:50%;border:1px solid rgba(212,175,55,.5);display:flex;align-items:center;justify-content:center;background:var(--green);color:var(--accent);font-size:1.3rem;font-style:italic;box-shadow:0 2px 8px rgba(0,0,0,.12);transition:transform .3s}
+    .logo:hover .logo-badge{transform:scale(1.05)}
+    .logo-wm{display:none}
+    @media(min-width:600px){.logo-wm{display:block}}
+    .logo-wm h1{font-family:var(--serif);font-size:1.15rem;color:var(--green);line-height:1;margin-bottom:3px;font-weight:500;letter-spacing:.04em}
+    .logo-wm p{font-family:var(--sans);font-size:8px;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;font-weight:700}
+    .desk-nav{display:none;align-items:center;gap:30px}
+    @media(min-width:768px){.desk-nav{display:flex}}
+    .nav-link{font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(26,26,26,.5);transition:color .25s;position:relative}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width .3s}
+    .nav-link:hover{color:var(--text)}
+    .nav-link:hover::after,.nav-link.active::after{width:100%}
+    .nav-link.active{color:var(--text)}
+    .hdr-act{display:flex;align-items:center;gap:18px}
+    .adm-btn{display:flex;align-items:center;gap:5px;font-family:var(--sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--g400);transition:color .25s;white-space:nowrap}
+    .adm-btn:hover{color:var(--green)}
+    .adm-btn svg{width:16px;height:16px}
+    .adm-lbl{display:none}
+    @media(min-width:600px){.adm-lbl{display:inline}}
+    .cart-btn{position:relative;display:flex;align-items:center}
+    .cart-btn svg{width:24px;height:24px;color:var(--text);transition:color .25s}
+    .cart-btn:hover svg{color:var(--green)}
+    .cart-badge{position:absolute;top:-6px;right:-8px;background:var(--accent);color:#fff;font-family:var(--sans);font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+    .adm-ind{position:fixed;top:82px;left:16px;z-index:40;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border:1px solid var(--border);padding:8px 16px;border-radius:100px;box-shadow:var(--sh)}
+    .ind-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 2s infinite}
+    .ind-lbl{font-family:var(--sans);font-size:11px;font-weight:700;color:var(--g400)}
+    .sign-out{font-family:var(--sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text);border-left:1px solid var(--g200);padding-left:12px;margin-left:2px;transition:color .2s}
+    .sign-out:hover{color:var(--red)}
+
+    /* MOBILE MENU */
+    #mobileMenu{display:none;position:fixed;inset:0;background:rgba(253,251,247,.98);z-index:60;flex-direction:column;align-items:center;justify-content:center;gap:26px}
+    #mobileMenu.open{display:flex}
+    .mob-close{position:absolute;top:24px;right:24px;color:var(--g400)}
+    .mob-close svg{width:32px;height:32px}
+    .mob-link{font-family:var(--serif);font-size:2rem;font-style:italic;color:var(--green);transition:color .2s}
+    .mob-link:hover{color:var(--accent)}
+    .mob-div{width:48px;height:1px;background:var(--accent)}
+    .mob-adm{font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--g500);display:flex;align-items:center;gap:8px;transition:color .2s}
+    .mob-adm:hover{color:var(--green)}
+    .mob-adm svg{width:16px;height:16px}
+
+    /* HERO — uses ./hero.jpg which is the beautiful green branded image */
+    .hero{background:linear-gradient(160deg,rgba(15,15,15,.55) 0%,rgba(44,76,59,.82) 100%),url('./hero.jpg') center/cover no-repeat;padding:7rem 1.5rem;display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff;position:relative;overflow:hidden;margin-bottom:3.5rem}
+    @media(min-width:768px){.hero{padding:9rem 1.5rem}}
+    .hero-in{max-width:720px;position:relative;z-index:1}
+    .hero-eye{font-family:var(--sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3em;color:var(--accent);margin-bottom:16px}
+    .hero-title{font-size:clamp(2.8rem,7vw,5rem);font-style:italic;line-height:1.1;margin-bottom:20px}
+    .hero-sub{font-family:var(--sans);font-size:clamp(1rem,2vw,1.15rem);font-weight:300;letter-spacing:.04em;color:rgba(255,255,255,.82);margin:0 auto 40px;max-width:520px}
+    .hero-cta{display:inline-flex;align-items:center;gap:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;padding:14px 32px;border-radius:100px;transition:all .3s;backdrop-filter:blur(4px)}
+    .hero-cta:hover{background:rgba(255,255,255,.2);transform:translateY(-1px)}
+    .hero-cta svg{width:16px;height:16px}
+
+    /* PAGES */
+    main{flex:1;width:100%;padding-bottom:5rem}
+    .pw{max-width:768px;margin:0 auto;padding:5rem 1.5rem}
+    .pt{font-size:clamp(1.8rem,4vw,2.8rem);font-style:italic;text-align:center;color:var(--green);margin-bottom:3rem}
+    .pc{background:#fff;padding:2.5rem;border-radius:var(--rl);margin-bottom:1.5rem;box-shadow:var(--sh)}
+    @media(min-width:768px){.pc{padding:3rem 3.5rem}}
+    .pc h3{font-family:var(--serif);font-size:1.2rem;color:var(--green);margin-bottom:1rem}
+    .pc p{font-family:var(--sans);color:var(--g500);line-height:1.8;margin-bottom:1.25rem;font-weight:300}
+    .pc p:last-child{margin-bottom:0}
+
+    /* ADMIN */
+    .aw{max-width:640px;margin:0 auto;padding:3rem 1.5rem}
+    .ac{background:#fff;border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden}
+    .ah{background:var(--green);padding:20px 32px;display:flex;align-items:center;gap:12px}
+    .ah-ico{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+    .ah-ico svg{width:18px;height:18px}
+    .ah-title{font-family:var(--serif);font-size:1.1rem;color:#fff;line-height:1;margin-bottom:3px}
+    .ah-sub{font-family:var(--sans);font-size:9px;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.5)}
+    .ab{padding:2rem 2.5rem 2.5rem}
+    .ab h3{font-family:var(--serif);font-size:1.5rem;color:var(--green);margin-bottom:6px}
+    .ab>p{font-family:var(--sans);font-size:13px;color:var(--g400);margin-bottom:28px}
+    .upz{border:2px dashed rgba(44,76,59,.28);background:rgba(238,243,240,.4);border-radius:var(--rl);padding:3rem 2rem;text-align:center;transition:all .3s;cursor:pointer}
+    .upz:hover,.upz.drag-over{border-color:var(--accent);background:rgba(238,243,240,.88);transform:scale(1.01)}
+    .up-ico{width:64px;height:64px;border-radius:50%;background:rgba(44,76,59,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--green);transition:transform .3s}
+    .upz:hover .up-ico{transform:scale(1.1)}
+    .up-ico svg{width:32px;height:32px}
+    .up-txt{font-family:var(--serif);font-size:1.05rem;color:var(--text);margin-bottom:6px}
+    .up-txt label{color:var(--green);font-weight:700;cursor:pointer}
+    .up-hint{font-family:var(--sans);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--g400)}
+    .up-msg{margin-top:20px;font-family:var(--sans);font-size:13px;padding:12px 16px;border-radius:12px;border:1px solid}
+    .s-idle{background:var(--g50);color:#4b5563;border-color:var(--g200)}
+    .s-ok{background:var(--green-lt);color:var(--green);border-color:rgba(44,76,59,.2)}
+    .s-err{background:#fef2f2;color:var(--red);border-color:#fecaca}
+    details.cg{margin-top:24px}
+    details.cg summary{font-family:var(--sans);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--g400);cursor:pointer;display:flex;align-items:center;gap:8px;list-style:none;transition:color .2s}
+    details.cg summary::-webkit-details-marker{display:none}
+    details.cg summary:hover{color:var(--green)}
+    details.cg summary svg{width:14px;height:14px;transition:transform .2s}
+    details.cg[open] summary svg{transform:rotate(90deg)}
+    .cg-body{margin-top:16px;background:var(--g50);border:1px solid var(--g100);border-radius:12px;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .cg-body div{font-family:var(--sans);font-size:11px;color:var(--g500)}
+    .cg-body code{color:var(--green);font-weight:700}
+
+    /* CUSTOMER VIEW */
+    .cw{max-width:1400px;margin:0 auto;padding:0 24px}
+    @media(min-width:1024px){.cw{padding:0 48px}}
+    .tb{display:flex;flex-direction:column;gap:20px;border-bottom:1px solid var(--border);padding-bottom:24px;margin-bottom:40px}
+    @media(min-width:640px){.tb{flex-direction:row;align-items:flex-end;justify-content:space-between}}
+    .sw{position:relative;width:100%;max-width:400px}
+    .si{position:absolute;left:0;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--g400);pointer-events:none}
+    .sinp{width:100%;border:none;border-bottom:2px solid var(--border);background:transparent;padding:12px 12px 12px 26px;font-family:var(--sans);font-size:14px;color:var(--text);outline:none;transition:border-color .25s}
+    .sinp:focus{border-bottom-color:var(--accent)}
+    .sinp::placeholder{color:var(--g400)}
+    .rc{font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);display:flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap}
+    .rc::before{content:'';display:block;width:32px;height:1px;background:var(--accent)}
+    #productGrid{display:grid;grid-template-columns:1fr;gap:2rem}
+    @media(min-width:640px){#productGrid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:768px){#productGrid{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:1024px){#productGrid{grid-template-columns:repeat(4,1fr);gap:2.5rem}}
+
     /* PRODUCT CARD */
-    .product-card { 
-      @apply bg-white rounded-xl overflow-hidden shadow-premium transition-all duration-300 flex flex-col group;
-      min-height: 540px;
-    }
-    .product-card:hover { transform: translateY(-4px); @apply shadow-premium-hover; }
-    
-    /* Base Standard Button */
-    .btn-primary { 
-      @apply w-full bg-archive-green text-white font-sans font-bold py-3.5 px-6 rounded-lg 
-             hover:bg-archive-greenHover transition-all duration-300 text-sm tracking-widest uppercase
-             disabled:opacity-50 disabled:cursor-not-allowed mt-auto flex items-center justify-center gap-2;
-    }
-    .btn-primary.in-cart { @apply bg-archive-text; }
-    
-    /* UI Overlays */
-    .mode-toggle { @apply fixed top-24 left-4 z-40 flex items-center space-x-3 bg-white/90 backdrop-blur-md border border-archive-border px-4 py-2.5 rounded-full shadow-premium font-sans text-xs transition-all; }
-    .upload-zone { @apply border-2 border-dashed border-archive-green/30 bg-archive-lightGreen/50 rounded-2xl p-12 text-center hover:border-archive-accent transition-all duration-300 cursor-pointer; }
-    
-    .hidden { display: none !important; }
-    .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    
-    /* Product Image */
-    .product-image-wrapper {
-      @apply relative bg-gray-50 overflow-hidden;
-      aspect-ratio: 1 / 1;
-    }
-    .product-main-image { 
-      @apply w-full h-full object-cover cursor-pointer transition-transform duration-700 ease-in-out;
-    }
-    .group:hover .product-main-image { transform: scale(1.05); }
+    .pcard{background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;min-height:510px}
+    .pcard:hover{transform:translateY(-5px);box-shadow:var(--shh)}
+    .p-img{position:relative;background:#f7f6f2;overflow:hidden;aspect-ratio:1/1;cursor:pointer}
+    .p-main{width:100%;height:100%;object-fit:cover;transition:transform .7s,opacity .2s}
+    .pcard:hover .p-main{transform:scale(1.05)}
+    .vbadge{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);color:#fff;font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:100px;z-index:5}
+    .tstrip{display:flex;gap:10px;margin:12px 16px 0;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+    .tstrip::-webkit-scrollbar{height:3px}
+    .tstrip::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}
+    .pthumb{width:56px;height:56px;object-fit:cover;border-radius:8px;border:2px solid transparent;cursor:pointer;opacity:.55;transition:all .25s;flex-shrink:0}
+    .pthumb:hover{opacity:.9;transform:scale(1.06)}
+    .pthumb.active{border-color:var(--accent);opacity:1;box-shadow:0 3px 10px rgba(212,175,55,.25)}
+    .pbody{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1}
+    .ptitle{font-family:var(--serif);font-size:1.05rem;line-height:1.35;color:var(--text);margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;transition:color .2s}
+    .ptitle:hover{color:var(--green)}
+    .ptags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+    .ptag{display:inline-flex;align-items:center;background:var(--g50);border:1px solid var(--g100);padding:4px 10px;border-radius:6px;font-family:var(--sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    .ptag.pat{color:var(--green)}
+    .ptag.era{color:var(--g500)}
+    .pfoot{margin-top:auto}
+    .ppr{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--g100);margin-bottom:14px}
+    .pprice{font-family:var(--sans);font-weight:700;font-size:1.05rem}
+    .stk{display:inline-flex;align-items:center;padding:4px 12px;border-radius:100px;font-family:var(--sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    .stk-in{background:var(--green-lt);color:var(--green)}
+    .stk-out{background:#fff0f0;color:var(--red)}
+    .btnp{width:100%;background:var(--green);color:#fff;font-family:var(--sans);font-weight:700;padding:13px 20px;border-radius:10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+    .btnp:hover:not(:disabled){background:var(--green-h)}
+    .btnp:disabled{opacity:.4;cursor:not-allowed}
+    .btnp.in-cart{background:var(--text)}
+    .btnp svg{width:16px;height:16px;flex-shrink:0}
+    .empty{text-align:center;padding:8rem 1.5rem}
+    .empty svg{width:56px;height:56px;color:var(--border);margin:0 auto 16px}
+    .empty h3{font-family:var(--serif);font-size:1.5rem;margin-bottom:8px}
+    .empty p{font-family:var(--sans);font-size:14px;color:var(--g400)}
 
-    /* Tags */
-    .tag-count { @apply absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] uppercase tracking-wider px-2.5 py-1.5 rounded-full font-sans font-bold z-10; }
-    
-    /* Thumbnail Gallery - Smooth scrolling */
-    .image-thumbnails {
-      display: flex !important;
-      flex-direction: row !important;
-      gap: 12px !important;
-      margin-top: 16px !important;
-      overflow-x: auto !important;
-      overflow-y: hidden !important;
-      white-space: nowrap !important;
-      padding: 0 4px 8px 4px !important;
-      width: 100% !important;
-      -webkit-overflow-scrolling: touch;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: thin;
-      scrollbar-color: #d4af37 transparent;
-    }
-    .image-thumbnails::-webkit-scrollbar { height: 4px; }
-    .image-thumbnails::-webkit-scrollbar-track { background: transparent; }
-    .image-thumbnails::-webkit-scrollbar-thumb { background: #e5e0d8; border-radius: 4px; }
-    .image-thumbnails:hover::-webkit-scrollbar-thumb { background: #d4af37; }
-    
-    .thumbnail {
-      width: 60px !important;
-      height: 60px !important;
-      border: 2px solid transparent !important;
-      border-radius: 8px !important;
-      cursor: pointer !important;
-      opacity: 0.6 !important;
-      transition: all 0.3s ease !important;
-      flex-shrink: 0 !important;
-      object-fit: cover !important;
-      display: inline-block !important;
-      scroll-snap-align: start;
-    }
-    .thumbnail:hover { opacity: 1 !important; transform: scale(1.05); }
-    .thumbnail.active { 
-      border-color: #d4af37 !important; 
-      opacity: 1 !important;
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2) !important;
-    }
-    
-    /* Stock Badge */
-    .stock-badge { @apply inline-flex items-center px-3 py-1 rounded-full text-[10px] font-sans font-bold uppercase tracking-wider; }
-    .stock-in { @apply bg-archive-lightGreen text-archive-green; }
-    .stock-out { @apply bg-red-50 text-red-600; }
-    
-    /* Slide-over Cart */
-    #cart-tray { 
-      position: fixed !important;
-      top: 0 !important;
-      right: -100% !important;
-      width: 100% !important;
-      max-width: 440px !important;
-      height: 100vh !important;
-      background: white !important;
-      box-shadow: -10px 0 40px rgba(0,0,0,0.1) !important;
-      z-index: 100 !important;
-      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      display: flex !important;
-      flex-direction: column !important;
-    }
-    #cart-tray.open { right: 0 !important; }
-    
-    .cart-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(2px);
-      z-index: 99;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.4s ease;
-    }
-    .cart-overlay.open { opacity: 1; visibility: visible; }
+    /* LOGIN MODAL */
+    .mbg{position:fixed;inset:0;background:rgba(10,10,10,.72);backdrop-filter:blur(8px);z-index:70;display:none;align-items:center;justify-content:center;padding:1rem}
+    .mbg.open{display:flex}
+    .lcard{background:#fff;border-radius:var(--rl);max-width:420px;width:100%;position:relative;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.3)}
+    .lstripe{height:6px;background:linear-gradient(to right,var(--green),var(--accent),var(--green))}
+    .lbody{padding:2.5rem}
+    .lcls{position:absolute;top:18px;right:18px;color:var(--g400);transition:color .2s;padding:4px}
+    .lcls:hover{color:var(--text)}
+    .lcls svg{width:18px;height:18px}
+    .lico{width:64px;height:64px;border-radius:50%;background:var(--green-lt);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+    .lico svg{width:30px;height:30px;color:var(--green)}
+    .ltitle{font-family:var(--serif);font-size:1.5rem;color:var(--green);text-align:center;margin-bottom:6px}
+    .lsub{font-family:var(--sans);font-size:13px;color:var(--g400);text-align:center;margin-bottom:24px;line-height:1.5}
+    #googleSignInContainer{display:flex;justify-content:center;margin-bottom:20px;min-height:44px}
+    .ldiv{display:flex;align-items:center;gap:12px;margin:20px 0}
+    .ldiv::before,.ldiv::after{content:'';flex:1;height:1px;background:var(--g100)}
+    .ldiv span{font-family:var(--sans);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--g400)}
+    .plbl{font-family:var(--sans);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--g400);display:block;margin-bottom:8px}
+    .prow{display:flex;gap:8px}
+    .pinp{flex:1;border:1px solid var(--g200);border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:14px;outline:none;transition:border-color .25s;color:var(--text)}
+    .pinp:focus{border-color:var(--accent)}
+    .pbtn{background:var(--green);color:#fff;font-family:var(--sans);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:0 20px;border-radius:10px;border:none;cursor:pointer;transition:background .2s;white-space:nowrap}
+    .pbtn:hover{background:var(--green-h)}
+    .perr{font-family:var(--sans);font-size:12px;color:var(--red);margin-top:8px}
+    .phint{font-family:var(--sans);font-size:10px;color:var(--g400);margin-top:8px}
+    .phint code{color:var(--g500)}
+    .lsc{font-family:var(--sans);font-size:10px;color:var(--g400);text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--g100)}
+    .lsc code{color:var(--g500)}
 
-    /* Custom Input Search */
-    .search-wrapper { position: relative; width: 100%; max-width: 400px; }
-    .search-input { 
-      @apply w-full border-b-2 border-archive-border bg-transparent py-3 pl-10 pr-4 font-sans text-sm focus:outline-none focus:border-archive-accent transition-colors;
-    }
-    .search-icon { position: absolute; left: 0; top: 12px; color: #888; width: 20px; height: 20px; }
-    
-    /* Navigation */
-    .nav-link { @apply text-xs font-sans font-bold uppercase tracking-widest text-archive-text/60 hover:text-archive-accent transition-colors relative; }
-    .nav-link::after {
-      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
-      background: #d4af37; transition: width 0.3s ease;
-    }
-    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
-    .nav-link.active { @apply text-archive-text; }
-    
-    /* Prose Pages */
-    .page-content { @apply max-w-3xl mx-auto px-6 py-20; }
-    .page-title { @apply text-4xl md:text-5xl font-serif italic mb-12 text-center text-archive-green; }
-    .page-section { @apply mb-10 bg-white p-8 md:p-12 rounded-2xl shadow-premium; }
-    .page-section p { @apply text-gray-600 leading-relaxed mb-6 font-sans text-lg font-light; }
-    
-    /* Logo Signature */
-    .logo-badge { 
-      @apply w-12 h-12 rounded-full border border-archive-accent/50 flex items-center justify-center bg-archive-green shadow-md text-archive-accent;
-    }
+    /* QUICK VIEW */
+    #quickViewModal{position:fixed;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(5px);z-index:80;display:none;align-items:center;justify-content:center;padding:1rem}
+    #quickViewModal.open{display:flex}
+    #qvContent{background:#fff;border-radius:var(--rl);max-width:960px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;position:relative;transform:scale(.95);opacity:0;transition:transform .3s,opacity .3s;box-shadow:0 30px 80px rgba(0,0,0,.3)}
+    #quickViewModal.open #qvContent{transform:scale(1);opacity:1}
+    .qvx{position:absolute;top:14px;right:14px;z-index:20;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);border-radius:50%;padding:8px;color:var(--g500);border:1px solid var(--g200);transition:all .2s}
+    .qvx:hover{color:var(--text);background:#fff}
+    .qvx svg{width:20px;height:20px;display:block}
+    .qvlay{display:flex;flex-direction:column;overflow-y:auto}
+    @media(min-width:768px){.qvlay{flex-direction:row;overflow-y:hidden;height:100%}}
+    .qvic{background:#f7f6f2;display:flex;flex-direction:column;flex-shrink:0;border-right:1px solid var(--border)}
+    @media(min-width:768px){.qvic{width:48%}}
+    .qvmw{flex:1;overflow:hidden;position:relative;min-height:280px}
+    @media(min-width:768px){.qvmw{min-height:360px}}
+    #qvMainImage{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s}
+    .qvts{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;background:#fff;border-top:1px solid var(--border);scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+    .qvts::-webkit-scrollbar{height:3px}
+    .qvts::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}
+    .qvt{width:64px;height:64px;object-fit:cover;border-radius:8px;border:2px solid transparent;cursor:pointer;opacity:.55;transition:all .2s;flex-shrink:0}
+    .qvt:hover{opacity:.9}
+    .qvt.active{border-color:var(--accent);opacity:1;box-shadow:0 2px 8px rgba(212,175,55,.3)}
+    .qvd{flex:1;overflow-y:auto;padding:2rem 2.5rem;background:#fff}
+    .qvm{font-family:var(--sans);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .qvdot{width:4px;height:4px;border-radius:50%;background:var(--g400)}
+    #qvTitle{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin-bottom:12px}
+    #qvPrice{font-family:var(--sans);font-size:1.4rem;font-weight:700;color:var(--green);margin-bottom:20px}
+    .qvr{width:40px;height:1px;background:var(--accent);margin-bottom:20px}
+    .qvdesc{font-family:var(--sans);font-size:14px;color:var(--g500);line-height:1.7;margin-bottom:24px}
+    .qvat{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:var(--g50);border:1px solid var(--g100);border-radius:12px;padding:16px;margin-bottom:24px}
+    .qval{font-family:var(--sans);font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--g400);display:block;margin-bottom:3px}
+    .qvav{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--text)}
+
+    /* CART */
+    .cov{position:fixed;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(3px);z-index:99;opacity:0;visibility:hidden;transition:all .4s}
+    .cov.open{opacity:1;visibility:visible}
+    #cart-tray{position:fixed;top:0;right:-100%;width:100%;max-width:440px;height:100vh;background:#fff;box-shadow:-10px 0 50px rgba(0,0,0,.1);z-index:100;transition:right .4s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
+    #cart-tray.open{right:0}
+    .chdr{padding:24px 32px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+    .ctitle{font-family:var(--serif);font-size:1.5rem;color:var(--green);line-height:1;margin-bottom:4px}
+    .ccnt{font-family:var(--sans);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
+    .cx{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--g400);transition:all .2s}
+    .cx:hover{background:var(--g50);color:var(--text)}
+    .cx svg{width:20px;height:20px}
+    #cartItems{flex:1;overflow-y:auto;padding:24px 32px;background:rgba(253,251,247,.5)}
+    .cempty{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--g400);gap:12px;padding:4rem 0;height:100%;text-align:center}
+    .cempty svg{width:48px;height:48px}
+    .cempty p{font-family:var(--sans);font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+    .clist{display:flex;flex-direction:column;gap:12px}
+    .citem{background:#fff;padding:14px;border-radius:12px;border:1px solid var(--border);display:flex;gap:14px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+    .cithumb{width:70px;height:70px;object-fit:cover;border-radius:8px;flex-shrink:0}
+    .ciinfo{flex:1;min-width:0}
+    .ciname{font-family:var(--serif);font-size:.95rem;line-height:1.3;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .cisku{font-family:var(--sans);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:700;margin-bottom:8px}
+    .cirow{display:flex;justify-content:space-between;align-items:center}
+    .ciprice{font-family:var(--sans);font-weight:700;font-size:13px}
+    .qtyc{display:flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g100);border-radius:100px;padding:2px 4px}
+    .qtybtn{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;color:var(--g500);transition:all .2s}
+    .qtybtn:hover{background:#fff}
+    .qtybtn.minus:hover{color:var(--red)}
+    .qtybtn.plus:hover{color:var(--green)}
+    .qtyn{font-family:var(--sans);font-size:12px;font-weight:700;width:16px;text-align:center}
+    .cfoot{padding:24px 32px;border-top:1px solid var(--border);flex-shrink:0;background:#fff;box-shadow:0 -10px 40px rgba(0,0,0,.03)}
+    .trow{display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--g100);margin-bottom:20px}
+    .tlbl{font-family:var(--serif);font-size:1rem;font-style:italic;color:var(--g400)}
+    .tamt{font-family:var(--serif);font-size:1.2rem;font-weight:700}
+    .bclr{width:100%;margin-top:12px;font-family:var(--sans);font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:var(--g400);padding:8px;transition:color .2s}
+    .bclr:hover{color:var(--red)}
+
+    /* FOOTER */
+    .sftr{border-top:1px solid var(--border);background:var(--text);color:#fff;padding:4rem 1.5rem;margin-top:auto}
+    @media(min-width:1024px){.sftr{padding:4rem 3rem}}
+    .fin{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:3rem;text-align:center}
+    @media(min-width:768px){.fin{grid-template-columns:repeat(3,1fr);text-align:left}}
+    .flogo{display:flex;align-items:center;gap:12px;margin-bottom:20px;justify-content:center}
+    @media(min-width:768px){.flogo{justify-content:flex-start}}
+    .fbadge{width:32px;height:32px;border-radius:50%;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;background:var(--green);flex-shrink:0;font-family:var(--serif);font-style:italic;color:var(--accent);font-size:14px}
+    .fbrand{font-family:var(--serif);font-size:1.1rem;letter-spacing:.04em}
+    .ftag{font-family:var(--sans);font-size:13px;font-weight:300;color:rgba(255,255,255,.35);max-width:280px;margin:0 auto;line-height:1.6}
+    @media(min-width:768px){.ftag{margin:0}}
+    .fnh{font-family:var(--sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:#fff;margin-bottom:16px}
+    .fnl{display:flex;flex-direction:column;gap:12px;align-items:center}
+    @media(min-width:768px){.fnl{align-items:flex-start}}
+    .fnl button{font-family:var(--sans);font-size:13px;font-weight:300;color:rgba(255,255,255,.45);transition:color .2s}
+    .fnl button:hover{color:var(--accent)}
+    .flegal{text-align:center}
+    @media(min-width:768px){.flegal{text-align:right}}
+    .flh{font-family:var(--sans);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:#fff;margin-bottom:16px}
+    .fcopy{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.22);line-height:1.7}
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] hidden flex items-center justify-center transition-opacity">
-    <div class="bg-white p-8 rounded-2xl shadow-premium max-w-sm w-full mx-4 text-center relative">
-      <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-archive-text">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-      <h3 class="font-serif text-2xl text-archive-green mb-2">Archivist Login</h3>
-      <p class="text-sm font-sans text-gray-500 mb-6">Authenticate to access the inventory management system.</p>
-      <div id="googleSignInContainer" class="flex justify-center mb-4 min-h-[40px]"></div>
-      <p class="text-xs text-gray-400 mt-4 border-t pt-4">Or use emergency override shortcut if authorized.</p>
+<!-- MOBILE MENU -->
+<div id="mobileMenu">
+  <button class="mob-close" onclick="closeMM()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg></button>
+  <button class="mob-link" onclick="showPage('shop');closeMM()">Collection</button>
+  <button class="mob-link" onclick="showPage('about');closeMM()">Our Story</button>
+  <button class="mob-link" onclick="showPage('shipping');closeMM()">Shipping</button>
+  <button class="mob-link" onclick="showPage('contact');closeMM()">Contact</button>
+  <div class="mob-div"></div>
+  <button class="mob-adm" onclick="openLogin();closeMM()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Archivist Login</button>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="mbg" onclick="if(event.target===this)closeLogin()">
+  <div class="lcard">
+    <div class="lstripe"></div>
+    <div class="lbody">
+      <button class="lcls" onclick="closeLogin()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      <div class="lico"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+      <h3 class="ltitle">Archivist Login</h3>
+      <p class="lsub">Authenticate to access inventory management &amp; CSV upload.</p>
+      <div id="googleSignInContainer"></div>
+      <div class="ldiv"><span>or</span></div>
+      <label class="plbl" for="pinInput">Archivist PIN</label>
+      <div class="prow">
+        <input type="password" id="pinInput" class="pinp" placeholder="Enter access PIN" maxlength="24" onkeydown="if(event.key==='Enter')checkPin()">
+        <button class="pbtn" onclick="checkPin()">Enter</button>
+      </div>
+      <p id="pinError" class="perr hidden">Incorrect PIN. Please try again.</p>
+      <p class="phint">Default PIN: <code>archive2024</code> — change before going live.</p>
+      <p class="lsc">Keyboard shortcut: <code>Ctrl + Alt + A</code></p>
     </div>
   </div>
+</div>
 
-  <!-- Quick View Modal -->
-  <div id="quickViewModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] hidden flex items-center justify-center transition-opacity opacity-0 mx-auto w-full h-full" onclick="if(event.target===this) closeQuickView()">
-    <div class="bg-white rounded-2xl shadow-premium max-w-5xl w-full mx-4 max-h-[90vh] flex flex-col md:flex-row overflow-hidden relative transform transition-transform scale-95" id="quickViewContent">
-      <button onclick="closeQuickView()" class="absolute top-4 right-4 z-10 bg-white/50 backdrop-blur-md rounded-full p-2 text-gray-500 hover:text-archive-text transition-colors border border-gray-200">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-      
-      <!-- Quick View Image Gallery -->
-      <div class="w-full md:w-1/2 bg-gray-50 flex flex-col items-center justify-center min-h-[40vh] md:min-h-full border-r border-archive-border relative">
-        <img id="qvMainImage" src="" class="w-full h-full object-cover absolute inset-0" alt="Product View">
+<!-- QUICK VIEW -->
+<div id="quickViewModal" onclick="if(event.target===this)closeQV()">
+  <div id="qvContent">
+    <button class="qvx" onclick="closeQV()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    <div class="qvlay">
+      <div class="qvic">
+        <div class="qvmw"><img id="qvMainImage" src="" alt=""></div>
+        <div class="qvts" id="qvThumbs"></div>
       </div>
-      
-      <!-- Quick View Details -->
-      <div class="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto z-10 bg-white">
-        <div class="text-[10px] font-sans uppercase tracking-widest text-archive-accent font-bold mb-3 flex items-center gap-2">
-            <span id="qvEra"></span> <span class="w-1 h-1 rounded-full bg-gray-300 inline-block"></span> <span id="qvPattern"></span>
+      <div class="qvd">
+        <div class="qvm"><span id="qvEra"></span><span class="qvdot" id="qvDot"></span><span id="qvPattern"></span></div>
+        <h1 id="qvTitle"></h1>
+        <p id="qvPrice"></p>
+        <div class="qvr"></div>
+        <p class="qvdesc">This magnificent piece has been preserved in our archive. It displays classical proportions and authentic craftsmanship indicative of its era. All pieces are thoroughly vetted for authenticity and structural integrity by our expert curators.</p>
+        <div class="qvat">
+          <div><span class="qval">SKU</span><span class="qvav" id="qvSku">—</span></div>
+          <div><span class="qval">Availability</span><span class="qvav" id="qvStock">—</span></div>
+          <div><span class="qval">Shipping</span><span class="qvav">Worldwide Insured</span></div>
+          <div><span class="qval">Condition</span><span class="qvav">Excellent Vintage</span></div>
         </div>
-        <h1 class="font-serif text-3xl md:text-4xl leading-tight text-archive-text mb-4" id="qvTitle">Product Title</h1>
-        <p class="font-sans text-2xl font-bold text-archive-green mb-6" id="qvPrice">$0.00</p>
-        
-        <div class="w-12 h-[1px] bg-archive-accent mb-6"></div>
-        
-        <div class="font-sans text-gray-600 mb-8 space-y-4 text-sm leading-relaxed">
-            <p>This magnificent piece has been preserved in our archive. It displays classical proportions and authentic craftsmanship indicative of its era. All pieces are thoroughly vetted for authenticity and structural integrity by our expert curators.</p>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-y-4 text-xs font-sans text-gray-500 mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <div><strong class="block text-gray-400 uppercase tracking-wide text-[9px] mb-1">SKU</strong> <span class="font-bold text-archive-text" id="qvSku">---</span></div>
-            <div><strong class="block text-gray-400 uppercase tracking-wide text-[9px] mb-1">Availability</strong> <span id="qvStock">---</span></div>
-            <div><strong class="block text-gray-400 uppercase tracking-wide text-[9px] mb-1">Shipping</strong> <span>Worldwide Insured Delivery</span></div>
-            <div><strong class="block text-gray-400 uppercase tracking-wide text-[9px] mb-1">Condition</strong> <span>Excellent Vintage</span></div>
-        </div>
-        
-        <button id="qvAddToCartBtn" class="btn-primary w-full shadow-lg shadow-archive-green/20 py-4 text-sm" onclick="">
-            Add To Cart
-        </button>
+        <button id="qvBtn" class="btnp" style="box-shadow:0 8px 24px rgba(44,76,59,.2)">Add To Cart</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cov" id="cartOverlay" onclick="closeCart()"></div>
 
-  <!-- Header -->
-  <header class="glass-header sticky top-0 z-50 transition-all duration-300">
-    <div class="bg-archive-text text-archive-bg py-2 text-center text-[10px] font-sans uppercase tracking-[0.2em] relative group cursor-pointer" onclick="showPage('shipping')">
-      Curated Antique & Vintage Ceramic Plates • Worldwide Shipping
-      <span class="absolute inset-x-0 bottom-0 h-[1px] bg-archive-accent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center max-w-xs mx-auto"></span>
+<!-- HEADER -->
+<header class="site-header">
+  <div class="ann" onclick="showPage('shipping')">Curated Antique &amp; Vintage Ceramic Plates &nbsp;•&nbsp; Worldwide Insured Shipping</div>
+  <div class="hdr">
+    <button class="burger" onclick="openMM()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <div class="logo" onclick="showPage('shop')">
+      <img src="./logo.png" alt="The Plate Archive Co." class="logo-img" onerror="this.style.display='none';document.getElementById('lFb').style.display='flex';">
+      <div id="lFb" class="logo-fb">
+        <div class="logo-badge">P</div>
+        <div class="logo-wm"><h1>The Plate Archive</h1><p>A Federation Collectibles Company</p></div>
+      </div>
     </div>
-    
-    <div class="max-w-[1400px] mx-auto px-6 lg:px-12 py-4 flex justify-between items-center">
-      <button class="md:hidden text-archive-text p-2 -ml-2" aria-label="Menu">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <nav class="desk-nav">
+      <button onclick="showPage('shop')"     class="nav-link active" id="nav-shop">Collection</button>
+      <button onclick="showPage('about')"    class="nav-link"        id="nav-about">Our Story</button>
+      <button onclick="showPage('shipping')" class="nav-link"        id="nav-shipping">Shipping</button>
+      <button onclick="showPage('contact')"  class="nav-link"        id="nav-contact">Contact</button>
+    </nav>
+    <div class="hdr-act">
+      <button class="adm-btn" onclick="openLogin()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span class="adm-lbl">Admin</span>
       </button>
+      <button class="cart-btn" id="toggleCartBtn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span class="cart-badge hidden" id="cartBadge">0</span>
+      </button>
+    </div>
+  </div>
+</header>
 
-      <!-- Logo -->
-      <div class="flex items-center space-x-4 cursor-pointer group" onclick="showPage('shop')">
-        <img src="./logo.png" alt="The Plate Archive Logo" class="h-16 w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="logo-fallback hidden items-center space-x-4">
-          <div class="logo-badge group-hover:scale-105 transition-transform duration-300">
-            <span class="text-2xl font-serif italic pr-1">P</span>
-          </div>
-          <div class="hidden sm:block">
-            <h1 class="text-2xl font-serif tracking-wide text-archive-green leading-none mb-1">The Plate Archive</h1>
-            <p class="text-[9px] text-archive-accent font-sans uppercase tracking-widest font-bold">A Federation Collectibles Company</p>
-          </div>
-        </div>
-      </div>
+<div class="adm-ind hidden" id="modeToggle">
+  <div class="ind-dot"></div><span class="ind-lbl">Admin Mode Active</span>
+  <button class="sign-out" id="signOutBtn">Sign Out</button>
+</div>
 
-      <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-8">
-        <button onclick="showPage('shop')" class="nav-link active" id="nav-shop">Collection</button>
-        <button onclick="showPage('about')" class="nav-link" id="nav-about">Our Story</button>
-        <button onclick="showPage('contact')" class="nav-link" id="nav-contact">Contact</button>
-      </nav>
-
-      <!-- Right Actions -->
-      <div class="flex items-center space-x-6">
-        <button id="adminLoginBtn" onclick="document.getElementById('loginModal').classList.remove('hidden')" class="hidden md:flex items-center gap-2 text-xs font-sans text-gray-500 hover:text-archive-text transition-colors">
-          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Admin
-        </button>
-        <button id="toggleCartBtn" class="flex items-center space-x-2 group">
-          <div class="relative">
-            <svg class="w-6 h-6 text-archive-text group-hover:text-archive-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-            <span id="cartBadge" class="absolute -top-1.5 -right-2 bg-archive-accent text-white text-[9px] font-bold font-sans w-4 h-4 rounded-full flex items-center justify-center shadow-sm">0</span>
-          </div>
-        </button>
+<!-- MAIN -->
+<main>
+  <section id="shopPage">
+    <div class="hero" id="heroSection">
+      <div class="hero-in fade-in" style="animation-delay:.1s">
+        <p class="hero-eye">A Federation Collectibles Company</p>
+        <h2 class="hero-title">Discover the Archive</h2>
+        <p class="hero-sub">A meticulously curated collection of rare, antique &amp; vintage ceramic plates.</p>
+        <button class="hero-cta" onclick="document.getElementById('customerView').scrollIntoView({behavior:'smooth'})">Browse Collection <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></button>
       </div>
     </div>
-  </header>
 
-  <div class="mode-toggle hidden shadow-lg" id="modeToggle">
-    <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-    <span class="font-bold text-gray-400">Admin Mode Active</span>
-    <button id="signOutBtn" class="ml-2 text-[10px] text-archive-text uppercase font-bold hover:text-red-500 transition-colors border-l pl-3 border-gray-200">Sign Out</button>
-  </div>
-
-  <main class="flex-1 w-full pb-20">
-    <section id="shopPage">
-      <div class="hero-bg text-white py-24 md:py-32 px-6 mb-12 flex flex-col items-center text-center relative overflow-hidden" id="heroSection">
-        <div class="absolute inset-0 bg-archive-green/40"></div>
-        <div class="relative z-10 max-w-3xl fade-in" style="animation-delay: 0.1s;">
-          <h2 class="text-5xl md:text-7xl font-serif italic mb-6 shadow-sm">Discover the Archive</h2>
-          <p class="text-lg md:text-xl font-sans font-light tracking-wide text-white/90 mb-10 max-w-2xl mx-auto">A meticulously curated collection of rare, antique, and vintage ceramic plates.</p>
+    <section id="adminView" class="hidden">
+      <div class="aw"><div class="ac">
+        <div class="ah">
+          <div class="ah-ico"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+          <div><div class="ah-title">Inventory Management</div><div class="ah-sub">Archivist Console</div></div>
         </div>
-      </div>
-
-      <section id="adminView" class="hidden">
-        <div class="max-w-3xl mx-auto px-6 py-12">
-          <div class="bg-white rounded-2xl shadow-premium p-10 text-center">
-            <h2 class="text-3xl font-serif text-archive-green mb-3">Inventory Initialization</h2>
-            <p class="text-gray-500 font-sans mb-8">Upload your master catalog CSV to populate the storefront.</p>
-            <div class="upload-zone group" id="dropZone">
-              <input type="file" id="csvInput" accept=".csv" class="hidden" />
-              <div class="w-16 h-16 rounded-full bg-archive-green/10 text-archive-green flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-              </div>
-              <p class="text-lg text-archive-text font-serif mb-2"><label for="csvInput" class="text-archive-green font-bold hover:underline cursor-pointer">Browse files</label> or drag and drop</p>
-              <p class="text-xs text-gray-400 font-sans uppercase tracking-widest">Supports Standard WooCommerce CSV Format</p>
+        <div class="ab">
+          <h3>Upload Catalog CSV</h3>
+          <p>Upload your WooCommerce CSV to populate the storefront. Changes go live immediately.</p>
+          <div class="upz" id="dropZone">
+            <input type="file" id="csvInput" accept=".csv" style="display:none">
+            <div class="up-ico"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg></div>
+            <p class="up-txt"><label for="csvInput">Browse files</label> or drag &amp; drop</p>
+            <p class="up-hint">WooCommerce CSV · Google Drive image URLs supported</p>
+          </div>
+          <div id="uploadStatus" class="up-msg hidden"></div>
+          <details class="cg">
+            <summary><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>CSV Column Reference</summary>
+            <div class="cg-body">
+              <div><code>name</code> — Product title</div><div><code>sku</code> — Unique identifier</div>
+              <div><code>regular price</code> — USD price</div><div><code>stock qty</code> — Inventory count</div>
+              <div><code>wp media url 1</code> — Image 1</div><div><code>wp media url 2</code> — Image 2</div>
+              <div><code>wp media url 3</code> — Image 3</div><div><code>pattern name</code> — Pattern</div>
+              <div><code>era / year made</code> — Era</div><div><code>country of origin</code> — Origin</div>
             </div>
-            <div id="uploadStatus" class="mt-6 text-sm font-sans hidden px-4 py-3 rounded-lg border"></div>
-            <div id="debugInfo" class="mt-4 text-xs text-gray-400 font-sans hidden border-t pt-4"></div>
-          </div>
+          </details>
         </div>
-      </section>
+      </div></div>
+    </section>
 
-      <section id="customerView" class="hidden max-w-[1400px] mx-auto px-6 lg:px-12">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-archive-border pb-6">
-          <div class="search-wrapper">
-            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input type="text" id="searchInput" placeholder="Search patterns, eras, or SKUs..." class="search-input">
+    <section id="customerView" class="hidden">
+      <div class="cw">
+        <div class="tb">
+          <div class="sw">
+            <svg class="si" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" id="searchInput" class="sinp" placeholder="Search patterns, eras, or SKUs…" autocomplete="off">
           </div>
-          <div class="text-xs font-sans font-bold uppercase tracking-widest text-archive-accent flex items-center gap-2">
-            <span class="w-8 h-[1px] bg-archive-accent"></span>
-            <span id="productCount">0</span> Items Curated
-          </div>
+          <div class="rc"><span id="productCount">0</span>&nbsp;Items Curated</div>
         </div>
-
         <div id="productGrid"></div>
-        
-        <div id="emptyState" class="text-center py-32 hidden">
-          <svg class="w-16 h-16 text-archive-border mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-          <h3 class="text-2xl font-serif text-archive-text mb-2">No pieces found</h3>
-          <p class="text-gray-500 font-sans">Try distinct keywords or exploring our full catalog.</p>
+        <div id="emptyState" class="empty hidden">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="stroke-width:1"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          <h3>No pieces found</h3><p>Try different keywords or explore the full catalog.</p>
         </div>
-      </section>
-    </section>
-
-    <!-- Other Pages -->
-    <section id="aboutPage" class="page-content hidden">
-      <h2 class="page-title">Our Story</h2>
-      <div class="page-section">
-        <p>The Plate Archive Co. is built on the belief that beauty endures. We scour estates, forgotten cellars, and specialized auctions across the globe to curate an impeccable collection of rare, vintage, and antique ceramic plates.</p>
-        <p>Each piece in our archive carries a history—a silent observer to centuries of shared meals, fervent conversations, and quiet mornings. We are proud to be a Federation Collectibles Company, adhering to the highest standards of preservation and provenance.</p>
       </div>
     </section>
-    
-    <section id="contactPage" class="page-content hidden">
-      <h2 class="page-title">Get in Touch</h2>
-      <div class="page-section text-center">
-        <p>For inquiries regarding specific pieces, provenance details, or private curation services, please reach out to our archivists.</p>
-        <a href="mailto:info@theplatearchive.co" class="inline-block border-b-2 border-archive-accent text-archive-green font-sans font-bold text-lg pb-1 hover:text-archive-accent transition-colors mt-4">info@theplatearchive.co</a>
-      </div>
-    </section>
+  </section>
 
-    <section id="shippingPage" class="page-content hidden">
-      <h2 class="page-title">Shipping & Authenticity</h2>
-      <div class="page-section text-left font-sans text-gray-700 space-y-4">
-        <h3 class="text-xl font-serif text-archive-green mb-2">Global Secure Delivery</h3>
-        <p>We provide fully insured, worldwide shipping for all our curated pieces. Understanding the fragile and irreplaceable nature of antique ceramics, our archivists utilize custom foam-in-place technology, double-boxing, and reinforced structural packing to guarantee absolute safety during transit.</p>
-        <p><strong>Processing Time:</strong> All orders are carefully processed and dispatched from our primary archive within 1-3 business days. You will receive a tracking manifest via email once your acquisition is en route.</p>
-        <p><strong>Authenticity Guarantee:</strong> The Plate Archive Co. unconditionally guarantees the authenticity of every item sold. Each piece is meticulously inspected by our specialists for maker's marks, glaze consistency, crazing patterns, and era-appropriate characteristics before being accepted into the archive.</p>
-      </div>
-    </section>
+  <section id="aboutPage" class="pw hidden"><h2 class="pt">Our Story</h2><div class="pc"><p>The Plate Archive Co. is built on the belief that beauty endures. We scour estates, forgotten cellars, and specialised auctions across the globe to curate an impeccable collection of rare, vintage, and antique ceramic plates.</p><p>Each piece in our archive carries a history — a silent observer to centuries of shared meals, fervent conversations, and quiet mornings. We are proud to be a Federation Collectibles Company, adhering to the highest standards of preservation and provenance.</p></div></section>
+  <section id="contactPage" class="pw hidden"><h2 class="pt">Get in Touch</h2><div class="pc" style="text-align:center"><p>For inquiries regarding specific pieces, provenance details, or private curation services, please reach out to our archivists.</p><a href="mailto:hello@theplatearchive.co" style="display:inline-block;border-bottom:2px solid var(--accent);color:var(--green);font-family:var(--sans);font-weight:700;font-size:1.1rem;padding-bottom:4px;margin-top:16px;transition:color .2s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--green)'">hello@theplatearchive.co</a></div></section>
+  <section id="shippingPage" class="pw hidden"><h2 class="pt">Shipping &amp; Authenticity</h2><div class="pc"><h3>Global Secure Delivery</h3><p>We provide fully insured, worldwide shipping for all our curated pieces. Our archivists utilise custom foam-in-place technology, double-boxing, and reinforced structural packing to guarantee absolute safety during transit.</p><p><strong>Processing Time:</strong> All orders are carefully processed and dispatched within 1–3 business days. You will receive a tracking manifest via email once your acquisition is en route.</p><p><strong>Authenticity Guarantee:</strong> Every item sold is inspected for maker's marks, glaze consistency, crazing patterns, and era-appropriate characteristics before being accepted into the archive.</p></div></section>
+  <section id="privacyPage" class="pw hidden"><h2 class="pt">Privacy Policy</h2><div class="pc"><h3>Information Security</h3><p>We collect only the information necessary to process your acquisitions and communicate shipping details. Your data is never sold or distributed to third parties.</p><p><strong>Communication:</strong> By providing your email, you consent to receive correspondence regarding specific inquiries or orders. Marketing communications are strictly opt-in.</p></div></section>
+  <section id="termsPage" class="pw hidden"><h2 class="pt">Terms of Service</h2><div class="pc"><h3>Conditions of Acquisition</h3><p>You are purchasing objects of history. Natural wear, minor gilding loss, or crazing are testaments to age, not defects.</p><p><strong>Returns &amp; Refunds:</strong> All sales are considered final upon dispatch. Returns are only authorised if an item significantly deviates from its archived description, or is damaged in transit (reported within 48 hours with photographic evidence).</p></div></section>
+</main>
 
-    <section id="privacyPage" class="page-content hidden">
-      <h2 class="page-title">Privacy Policy</h2>
-      <div class="page-section text-left font-sans text-gray-700 space-y-4">
-        <h3 class="text-xl font-serif text-archive-green mb-2">Information Security</h3>
-        <p>The Plate Archive Co. values the privacy and anonymity of our collectors. This Privacy Policy outlines our strict guidelines regarding your personal data.</p>
-        <p><strong>1. Data Collection:</strong> We collect only the information necessary to process your acquisitions, maintain your curation preferences, and communicate shipping details. This includes your name, shipping address, email, and secure payment tokens (which we do not store on our own servers).</p>
-        <p><strong>2. Information Usage:</strong> Your data is used exclusively for internal operations. We do not sell, rent, or distribute our client manifest to any third-party entities. Period.</p>
-        <p><strong>3. Communication:</strong> By providing your email, you consent to receive correspondence regarding your specific inquiries or orders. Marketing communications are strictly opt-in.</p>
-      </div>
-    </section>
+<!-- CART TRAY -->
+<div id="cart-tray">
+  <div class="chdr">
+    <div><div class="ctitle">Your Cart</div><div class="ccnt" id="cartHeaderCount">0 Items</div></div>
+    <button class="cx" id="closeCartBtn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg></button>
+  </div>
+  <div id="cartItems"></div>
+  <div class="cfoot">
+    <div class="trow"><span class="tlbl">Estimated Total</span><span class="tamt" id="cartSubtotal">$0.00</span></div>
+    <button id="exportBtn" class="btnp" style="padding:16px 20px;box-shadow:0 8px 24px rgba(44,76,59,.2)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Download Selection Manifest</button>
+    <button class="bclr" id="clearCartBtn">Clear Entire Cart</button>
+  </div>
+</div>
 
-    <section id="termsPage" class="page-content hidden">
-      <h2 class="page-title">Terms of Service</h2>
-      <div class="page-section text-left font-sans text-gray-700 space-y-4">
-        <h3 class="text-xl font-serif text-archive-green mb-2">Conditions of Acquisition</h3>
-        <p>By engaging with The Plate Archive Co. and acquiring our vintage pieces, you agree to the following conditions:</p>
-        <p><strong>1. Nature of Vintage Goods:</strong> You are purchasing objects of history. Natural wear, minor gilding loss, slight utensil marks, or crazing are testaments to age and use, not defects. We photograph and describe all condition issues to the best of our ability. Perfection should not be expected in wares that have survived a century or more.</p>
-        <p><strong>2. Returns & Refunds:</strong> Due to the logistical risk of transporting fragile antiques, all sales are considered final upon dispatch. Returns are only authorized if an item significantly deviates from its archived description, or is damaged in transit (which must be reported within 48 hours of delivery with photographic evidence of the packaging and item).</p>
-        <p><strong>3. Intellectual Property:</strong> All imagery, text, and curation frameworks on this site are the intellectual property of The Plate Archive Co., a Federation Collectibles Company. Unauthorized reproduction is prohibited.</p>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Slide-over Cart -->
-  <div id="cart-tray">
-    <div class="p-6 md:p-8 border-b border-archive-border flex justify-between items-center bg-white">
-      <div>
-        <h3 class="font-serif text-2xl text-archive-green">Your Cart</h3>
-        <p class="text-[10px] font-sans uppercase tracking-widest text-archive-accent mt-1" id="cartHeaderCount">0 Items</p>
-      </div>
-      <button id="closeCartBtn" class="w-10 h-10 rounded-full border border-archive-border flex items-center justify-center hover:bg-archive-bg transition-colors text-gray-500 hover:text-archive-text">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
+<!-- FOOTER -->
+<footer class="sftr">
+  <div class="fin">
+    <div>
+      <div class="flogo"><div class="fbadge">P</div><span class="fbrand">The Plate Archive</span></div>
+      <p class="ftag">Preserving ceramic history and artisanal craftsmanship for the modern collector.</p>
     </div>
-    
-    <div id="cartItems" class="flex-1 overflow-y-auto p-6 md:p-8 bg-archive-bg/50"></div>
-    
-    <div class="p-6 md:p-8 border-t border-archive-border bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.03)] z-50">
-      <div class="flex justify-between items-center mb-6 font-serif text-xl border-b border-gray-100 pb-4">
-        <span class="text-gray-500 italic">Estimated Total</span>
-        <span id="cartSubtotal" class="font-bold text-archive-text">$0.00</span>
+    <div>
+      <p class="fnh">Navigate</p>
+      <div class="fnl">
+        <button onclick="showPage('about')">Our Story</button>
+        <button onclick="showPage('shipping')">Shipping &amp; Authenticity</button>
+        <button onclick="showPage('privacy')">Privacy Policy</button>
+        <button onclick="showPage('terms')">Terms of Service</button>
       </div>
-      
-      <button id="exportBtn" class="btn-primary py-4 text-base shadow-lg shadow-archive-green/20">
-        Proceed to Checkout
-      </button>
-      <button id="clearCartBtn" class="w-full mt-4 text-[10px] uppercase tracking-widest font-bold text-gray-400 hover:text-red-600 transition-colors py-2">Clear Entire Cart</button>
+    </div>
+    <div class="flegal">
+      <p class="flh">A Federation Company</p>
+      <p class="fcopy">&copy; <span id="year"></span> All rights reserved.<br>The Plate Archive Co.</p>
     </div>
   </div>
+</footer>
 
-  <!-- Footer -->
-  <footer class="border-t border-archive-border bg-archive-text text-white py-16 px-6 lg:px-12 mt-auto">
-    <div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 text-center md:text-left">
-      <div>
-        <div class="flex items-center space-x-3 justify-center md:justify-start mb-6">
-          <div class="w-8 h-8 rounded-full border border-archive-accent flex items-center justify-center bg-archive-green"><span class="text-archive-accent font-serif italic text-sm">P</span></div>
-          <span class="font-serif text-xl tracking-wide">The Plate Archive</span>
+<script>
+const S={products:[],cart:{},mode:'customer',searchTerm:'',page:'shop',admin:false};
+document.getElementById('year').textContent=new Date().getFullYear();
+const PIN='archive2024';
+const FB='https://images.unsplash.com/photo-1610705126848-18eaf396f4fc?w=600&h=600&fit=crop&q=80';
+
+function openMM(){document.getElementById('mobileMenu').classList.add('open');document.body.style.overflow='hidden'}
+function closeMM(){document.getElementById('mobileMenu').classList.remove('open');document.body.style.overflow=''}
+function openLogin(){document.getElementById('loginModal').classList.add('open');document.body.style.overflow='hidden'}
+function closeLogin(){document.getElementById('loginModal').classList.remove('open');if(!S.admin)document.body.style.overflow='';document.getElementById('pinInput').value='';document.getElementById('pinError').classList.add('hidden')}
+function checkPin(){if(document.getElementById('pinInput').value.trim()===PIN){S.admin=true;closeLogin();showAdmin();}else{document.getElementById('pinError').classList.remove('hidden');document.getElementById('pinInput').value='';document.getElementById('pinInput').focus();}}
+function handleCredentialResponse(){S.admin=true;closeLogin();showAdmin();}
+
+window.onload=function(){
+  if(window.google&&google.accounts){
+    google.accounts.id.initialize({client_id:'167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com',callback:handleCredentialResponse});
+    google.accounts.id.renderButton(document.getElementById('googleSignInContainer'),{theme:'outline',size:'large',width:320});
+  }
+  loadDemo();
+};
+
+function showAdmin(){document.getElementById('modeToggle').classList.remove('hidden');setMode('admin');}
+function signOut(){S.admin=false;document.getElementById('modeToggle').classList.add('hidden');setMode('customer');}
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.altKey&&e.key.toLowerCase()==='a'){S.admin?signOut():(S.admin=true,showAdmin());}
+  if(e.key==='Escape'){closeQV();closeLogin();closeMM();closeCart();}
+});
+
+function showPage(n){
+  ['shopPage','aboutPage','contactPage','shippingPage','privacyPage','termsPage'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  const t=document.getElementById(n+'Page');if(t){t.classList.remove('hidden');t.classList.add('fade-in');}
+  const nav=document.getElementById('nav-'+n);if(nav)nav.classList.add('active');
+  if(n==='shop'){if(S.mode==='customer'){document.getElementById('heroSection').classList.remove('hidden');document.getElementById('customerView').classList.remove('hidden');renderGrid();}else document.getElementById('heroSection').classList.add('hidden');}
+  else{document.getElementById('heroSection').classList.add('hidden');window.scrollTo({top:0,behavior:'smooth'});}
+  S.page=n;
+}
+function setMode(m){
+  S.mode=m;
+  if(m==='admin'){document.getElementById('adminView').classList.remove('hidden');document.getElementById('customerView').classList.add('hidden');document.getElementById('heroSection').classList.add('hidden');}
+  else{document.getElementById('adminView').classList.add('hidden');if(S.page==='shop'){document.getElementById('customerView').classList.remove('hidden');document.getElementById('heroSection').classList.remove('hidden');}renderGrid();}
+}
+
+const COL={name:['name','title','item'],sku:['sku','id','reference'],price:['price','value','cost','regular price (usd)','regular price'],stock:['stock','qty','inventory','stock qty'],i1:['wordpress media url 1','wp media url 1'],i2:['wordpress media url 2','wp media url 2'],i3:['wordpress media url 3','wp media url 3'],pat:['pattern name','pattern'],era:['era / year made','era','year made']};
+function fc(h,v){const c=h.map((x,i)=>({c:(x||'').toString().toLowerCase().trim(),i}));for(const k of v){const m=c.find(z=>z.c===k.toLowerCase().trim());if(m)return h[m.i];}return null;}
+function pi(u){if(!u||typeof u!=='string')return null;const s=u.split(',')[0].trim();if(!s||s==='#REF!')return null;const d=s.match(/\/d\/([a-zA-Z0-9-_]+)/);if(d)return`https://drive.google.com/thumbnail?id=${d[1]}&sz=w800`;if(s.startsWith('http'))return s;return null;}
+function gi(row,h){const s=new Set();[COL.i1,COL.i2,COL.i3].forEach(m=>{const c=fc(h,m);if(c&&row[c]?.toString().trim()){const p=pi(row[c].trim());if(p)s.add(p);}});return Array.from(s);}
+function isDR(r){return Object.values(r).some(v=>v&&['WOOCOMMERCE IMPORT','STORE MANAGEMENT','HOW TO IMPORT'].some(p=>v.toString().toUpperCase().includes(p)));}
+function isER(r){return Object.values(r).every(v=>!v||v.toString().trim()===''||v.toString().trim()==='#REF!');}
+function norm(row,h){
+  const nc=fc(h,COL.name),sc=fc(h,COL.sku);if(!nc||!sc)return null;
+  const price=parseFloat((row[fc(h,COL.price)]||'0').toString().replace(/[^0-9.]/g,''))||0;
+  const stock=parseInt((row[fc(h,COL.stock)]||'0').toString().replace(/[^0-9]/g,''))||0;
+  const imgs=gi(row,h);
+  return{name:row[nc]?.toString().trim()||'Untitled',sku:row[sc]?.toString().trim(),price,priceFormatted:price>0?`$${price.toFixed(2)}`:'Inquire',image:imgs[0]||FB,images:imgs.length?imgs:[FB],stock,inStock:stock>0,pattern:row[fc(h,COL.pat)]?.toString().trim()||'',era:row[fc(h,COL.era)]?.toString().trim()||''};
+}
+
+async function handleFileUpload(file){
+  const el=document.getElementById('uploadStatus');el.classList.remove('hidden');el.className='up-msg s-idle';el.textContent='Analysing catalog…';
+  try{
+    Papa.parse(await file.text(),{header:true,skipEmptyLines:true,complete:r=>{
+      const h=Object.keys(r.data[0]||{}),sc=fc(h,COL.sku);
+      const prods=r.data.filter(x=>!isDR(x)&&!isER(x)&&sc&&x[sc]?.toString().trim().length>2).map(x=>norm(x,h)).filter(p=>p&&p.name&&p.sku);
+      if(!prods.length){el.className='up-msg s-err';el.textContent='Error: Catalog unreadable. Check column headers.';return;}
+      S.products=prods;el.className='up-msg s-ok';el.textContent=`✓ ${prods.length} pieces catalogued successfully.`;
+      setTimeout(()=>setMode('customer'),1500);
+    },error:e=>{el.className='up-msg s-err';el.textContent=`Parse error: ${e.message}`;}});
+  }catch(e){el.className='up-msg s-err';el.textContent=`Error: ${e.message}`;}
+}
+
+function loadDemo(){
+  if(S.products.length)return;
+  S.products=[
+    {name:'Royal Crown Derby Imari Plate',sku:'RCD-854-1',price:145,priceFormatted:'$145.00',image:'https://images.unsplash.com/photo-1576088273614-72fe882fd426?w=600&h=600&fit=crop',images:['https://images.unsplash.com/photo-1576088273614-72fe882fd426?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1610705126848-18eaf396f4fc?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1628157731215-649069796e95?w=600&h=600&fit=crop'],stock:2,inStock:true,pattern:'Imari 1128',era:'1980s'},
+    {name:'Spode Blue Italian Teacup & Saucer',sku:'SPD-BLU-22',price:65,priceFormatted:'$65.00',image:'https://images.unsplash.com/photo-1596484552834-6a58f85cbba5?w=600&h=600&fit=crop',images:['https://images.unsplash.com/photo-1596484552834-6a58f85cbba5?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1620067667822-475a7c2c019d?w=600&h=600&fit=crop'],stock:5,inStock:true,pattern:'Blue Italian',era:'1960s'},
+    {name:'Wedgwood Jasperware Pedestal Bowl',sku:'WDG-JSP-8',price:210,priceFormatted:'$210.00',image:'https://images.unsplash.com/photo-1628157731215-649069796e95?w=600&h=600&fit=crop',images:['https://images.unsplash.com/photo-1628157731215-649069796e95?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1576088273614-72fe882fd426?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1596484552834-6a58f85cbba5?w=600&h=600&fit=crop'],stock:1,inStock:true,pattern:'Pale Blue Classic',era:'1950s'},
+    {name:'Minton Haddon Hall Salad Plate',sku:'MNT-HH-44',price:45,priceFormatted:'$45.00',image:'https://images.unsplash.com/photo-1620067667822-475a7c2c019d?w=600&h=600&fit=crop',images:['https://images.unsplash.com/photo-1620067667822-475a7c2c019d?w=600&h=600&fit=crop'],stock:0,inStock:false,pattern:'Haddon Hall',era:'1970s'},
+    {name:'Coalport Bone China Floral Dinner Plate',sku:'COL-FLR-17',price:88,priceFormatted:'$88.00',image:'https://images.unsplash.com/photo-1613728913341-8cf5a61f5b0f?w=600&h=600&fit=crop',images:['https://images.unsplash.com/photo-1613728913341-8cf5a61f5b0f?w=600&h=600&fit=crop'],stock:3,inStock:true,pattern:'English Floral',era:'1940s'},
+    {name:'Royal Worcester Hand-Painted Charger',sku:'RWO-HPC-33',price:320,priceFormatted:'$320.00',image:'https://images.unsplash.com/photo-1612267385763-8db78c6b4881?w=600&h=600&fit=crop',images:['https://images.unsplash.com/photo-1612267385763-8db78c6b4881?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1628157731215-649069796e95?w=600&h=600&fit=crop'],stock:1,inStock:true,pattern:'Dr Wall Period',era:'1920s'},
+    {name:'Meissen Gilded Porcelain Soup Bowl',sku:'MEI-GLD-09',price:450,priceFormatted:'$450.00',image:'https://images.unsplash.com/photo-1541188495357-ad2dc89487f4?w=600&h=600&fit=crop',images:['https://images.unsplash.com/photo-1541188495357-ad2dc89487f4?w=600&h=600&fit=crop'],stock:1,inStock:true,pattern:'Crossed Swords',era:'1890s'},
+    {name:'Limoges Porcelain Serving Platter',sku:'LIM-SRV-55',price:175,priceFormatted:'$175.00',image:'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=600&h=600&fit=crop',images:['https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=600&h=600&fit=crop','https://images.unsplash.com/photo-1596484552834-6a58f85cbba5?w=600&h=600&fit=crop'],stock:2,inStock:true,pattern:'Art Nouveau Rose',era:'1910s'}
+  ];
+  document.getElementById('customerView').classList.remove('hidden');
+  renderGrid();
+}
+
+function renderGrid(){
+  const term=S.searchTerm.toLowerCase();
+  const f=S.products.filter(p=>p.name.toLowerCase().includes(term)||p.sku.toLowerCase().includes(term)||(p.pattern||'').toLowerCase().includes(term)||(p.era||'').toLowerCase().includes(term));
+  document.getElementById('productCount').textContent=f.length;
+  document.getElementById('emptyState').classList.toggle('hidden',f.length>0);
+  const grid=document.getElementById('productGrid');
+  if(!f.length){grid.innerHTML='';return;}
+  grid.innerHTML=f.map((p,i)=>{
+    const ic=S.cart[p.sku],qty=ic?ic.quantity:0,imgs=p.images||[],delay=(i%4)*.08;
+    const thumbs=imgs.length>=2?`<div class="tstrip" onclick="event.stopPropagation()">${imgs.map((img,j)=>`<img src="${img}" class="pthumb ${j===0?'active':''}" alt="view ${j+1}" loading="lazy" onclick="changeImg('${img}','${p.sku}',this);event.stopPropagation();">`).join('')}</div>`:'';
+    return `<article class="pcard fade-in" data-sku="${p.sku}" style="animation-delay:${delay}s" itemscope itemtype="https://schema.org/Product">
+      <meta itemprop="name" content="${p.name}"><meta itemprop="sku" content="${p.sku}">
+      <div class="p-img" onclick="openQV('${p.sku}')">
+        <img src="${p.image}" alt="${p.name}" class="p-main" id="mi-${p.sku}" loading="lazy" onerror="this.src='${FB}'" itemprop="image">
+        ${imgs.length>=2?`<span class="vbadge">${imgs.length} views</span>`:''}
+      </div>
+      ${thumbs}
+      <div class="pbody">
+        <h3 class="ptitle" onclick="openQV('${p.sku}')">${p.name}</h3>
+        <div class="ptags">${p.pattern?`<span class="ptag pat">${p.pattern}</span>`:''} ${p.era?`<span class="ptag era">${p.era}</span>`:''}</div>
+        <div class="pfoot">
+          <div class="ppr">
+            <span class="pprice" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><span itemprop="price" content="${p.price}">${p.priceFormatted}</span><meta itemprop="priceCurrency" content="USD"></span>
+            ${p.inStock?`<span class="stk stk-in">In Archive (${p.stock})</span>`:`<span class="stk stk-out">Archived</span>`}
+          </div>
+          <button class="btnp ${qty>0?'in-cart':''}" onclick="addToCart('${p.sku}');event.stopPropagation();" ${!p.inStock?'disabled':''}>
+            ${qty>0?`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Added (${qty})`:
+                   `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add to Cart`}
+          </button>
         </div>
-        <p class="text-white/50 text-sm font-sans font-light max-w-sm mx-auto md:mx-0">Preserving ceramic history and artisanal craftsmanship for the modern collector.</p>
       </div>
-      
-      <div class="flex flex-col gap-3 font-sans text-sm font-light text-white/60">
-        <p class="text-white font-bold uppercase tracking-widest text-[10px] mb-2">Legal & Support</p>
-        <button onclick="showPage('privacy')" class="hover:text-archive-accent transition-colors text-left md:text-center">Privacy Policy</button>
-        <button onclick="showPage('terms')" class="hover:text-archive-accent transition-colors text-left md:text-center">Terms of Service</button>
-        <button onclick="showPage('shipping')" class="hover:text-archive-accent transition-colors text-left md:text-center block md:hidden mt-2">Shipping Details</button>
-      </div>
+    </article>`;
+  }).join('');
+}
 
-      <div class="md:text-right">
-        <p class="text-white font-bold uppercase tracking-widest text-[10px] mb-4">A Federation Company</p>
-        <p class="text-white/40 text-xs font-sans">&copy; <span id="year">2026</span> All rights reserved.<br>San Francisco, CA</p>
-      </div>
-    </div>
-  </footer>
+function changeImg(url,sku,el){
+  const img=document.getElementById('mi-'+sku);
+  if(img){img.style.opacity='.4';img.style.transform='scale(.98)';setTimeout(()=>{img.src=url;img.style.opacity='1';img.style.transform='scale(1)';},180);}
+  const card=document.querySelector('[data-sku="'+sku+'"]');
+  if(card)card.querySelectorAll('.pthumb').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
 
-  <script>
-    // ==================== STATE ====================
-    const state = { products: [], cart: {}, mode: 'customer', searchTerm: '', currentPage: 'shop', isAdminLoggedIn: false };
-    document.getElementById('year').textContent = new Date().getFullYear();
+function openQV(sku){
+  const p=S.products.find(x=>x.sku===sku);if(!p)return;
+  document.getElementById('qvMainImage').src=p.image;
+  document.getElementById('qvMainImage').alt=p.name;
+  document.getElementById('qvTitle').textContent=p.name;
+  document.getElementById('qvPrice').textContent=p.priceFormatted;
+  document.getElementById('qvSku').textContent=p.sku;
+  document.getElementById('qvEra').textContent=p.era||'';
+  document.getElementById('qvPattern').textContent=p.pattern||'';
+  document.getElementById('qvDot').style.display=(p.era&&p.pattern)?'block':'none';
+  document.getElementById('qvStock').textContent=p.inStock?`${p.stock} Available`:'Sold Out';
+  const strip=document.getElementById('qvThumbs');
+  if(p.images&&p.images.length>=2){strip.style.display='flex';strip.innerHTML=p.images.map((img,i)=>`<img src="${img}" class="qvt ${i===0?'active':''}" alt="view ${i+1}" loading="lazy" onclick="switchQV('${img}',this)">`).join('');}
+  else{strip.style.display='none';strip.innerHTML='';}
+  const btn=document.getElementById('qvBtn');btn.disabled=!p.inStock;btn.onclick=()=>addToCart(sku);
+  const ic=S.cart[sku];btn.className='btnp '+(ic?'in-cart':'');
+  btn.innerHTML=ic?`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Added to Cart (${ic.quantity})`:
+                  `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add to Cart`;
+  document.getElementById('quickViewModal').classList.add('open');document.body.style.overflow='hidden';
+}
+function switchQV(url,el){
+  const img=document.getElementById('qvMainImage');img.style.opacity='.4';
+  setTimeout(()=>{img.src=url;img.style.opacity='1';},150);
+  document.querySelectorAll('.qvt').forEach(t=>t.classList.remove('active'));if(el)el.classList.add('active');
+}
+function closeQV(){document.getElementById('quickViewModal').classList.remove('open');document.body.style.overflow='';}
 
-    // ==================== GOOGLE AUTH ====================
-    let googleUser = null;
-    function handleCredentialResponse(response) { googleUser = response.credential; state.isAdminLoggedIn = true; showAdminControls(); }
-    
-    function showAdminControls() {
-      document.getElementById('modeToggle').classList.remove('hidden');
-      document.getElementById('loginModal').classList.add('hidden');
-      setMode('admin');
-    }
-    
-    function handleSignOut() {
-      googleUser = null; state.isAdminLoggedIn = false; setMode('customer');
-      document.getElementById('modeToggle').classList.add('hidden');
-    }
-    
-    document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
-            if(!state.isAdminLoggedIn) { state.isAdminLoggedIn = true; showAdminControls(); } 
-            else { handleSignOut(); }
-        }
-    });
+function addToCart(sku){
+  const p=S.products.find(x=>x.sku===sku);if(!p||!p.inStock)return;
+  if(!S.cart[sku])S.cart[sku]={product:p,quantity:0};
+  if(S.cart[sku].quantity>=p.stock){alert('Archival stock limit reached.');return;}
+  S.cart[sku].quantity++;renderCart();renderGrid();closeQV();openCart();
+}
+function updateQty(sku,d){
+  if(!S.cart[sku])return;const n=S.cart[sku].quantity+d;
+  if(n<=0)delete S.cart[sku];else if(n<=S.cart[sku].product.stock)S.cart[sku].quantity=n;
+  renderCart();renderGrid();
+}
+function openCart(){document.getElementById('cart-tray').classList.add('open');document.getElementById('cartOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeCart(){document.getElementById('cart-tray').classList.remove('open');document.getElementById('cartOverlay').classList.remove('open');document.body.style.overflow='';}
 
-    window.onload = function() {
-      if (window.google && google.accounts) {
-        google.accounts.id.initialize({ client_id: '167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com', callback: handleCredentialResponse });
-        google.accounts.id.renderButton(document.getElementById('googleSignInContainer'), { theme: 'outline', size: 'large' });
-      }
-    };
+function renderCart(){
+  const items=Object.values(S.cart);
+  const count=items.reduce((s,i)=>s+i.quantity,0),total=items.reduce((s,i)=>s+(i.product.price*i.quantity),0);
+  const badge=document.getElementById('cartBadge');badge.textContent=count;badge.classList.toggle('hidden',count===0);
+  document.getElementById('cartHeaderCount').textContent=count+' ITEMS SELECTED';
+  document.getElementById('cartSubtotal').textContent='$'+total.toFixed(2);
+  const el=document.getElementById('cartItems');
+  if(!items.length){el.innerHTML='<div class="cempty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg><p>Your cart is empty</p></div>';return;}
+  el.innerHTML='<div class="clist">'+items.map(i=>`<div class="citem"><img src="${i.product.image}" alt="${i.product.name}" class="cithumb" onerror="this.src='${FB}'"><div class="ciinfo"><div class="ciname">${i.product.name}</div><div class="cisku">SKU: ${i.product.sku}</div><div class="cirow"><span class="ciprice">${i.product.priceFormatted}</span><div class="qtyc"><button class="qtybtn minus" onclick="updateQty('${i.product.sku}',-1)">−</button><span class="qtyn">${i.quantity}</span><button class="qtybtn plus" onclick="updateQty('${i.product.sku}',1)">+</button></div></div></div></div>`).join('')+'</div>';
+}
 
-    // ==================== PAGE NAVIGATION ====================
-    function showPage(pageName) {
-      ['shopPage','aboutPage','contactPage','shippingPage','privacyPage','termsPage'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.classList.add('hidden');
-      });
-      document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-      
-      const targetPage = document.getElementById(pageName + 'Page');
-      if(targetPage) {
-          targetPage.classList.remove('hidden');
-          targetPage.classList.add('fade-in');
-      }
+function exportManifest(){
+  const items=Object.values(S.cart);if(!items.length){alert('Your selection is empty.');return;}
+  let txt='THE PLATE ARCHIVE CO. — SELECTION MANIFEST\nGenerated: '+new Date().toLocaleString()+'\n'+'='.repeat(62)+'\n\n';
+  let total=0;
+  items.forEach(i=>{const lt=i.product.price*i.quantity;total+=lt;txt+='['+i.product.sku+'] '+i.product.name.toUpperCase()+'\nUnit: '+i.product.priceFormatted+'  |  Qty: '+i.quantity+'  |  Line: $'+lt.toFixed(2)+'\n'+'-'.repeat(42)+'\n';});
+  txt+='\nESTIMATED TOTAL: $'+total.toFixed(2)+'\n\nAn Archivist will contact you to confirm provenance and arrange secure shipping.\nThank you for supporting Federation Collectibles.';
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([txt],{type:'text/plain'})),download:'PlateArchive_Manifest_'+new Date().toISOString().slice(0,10)+'.txt'});a.click();
+}
 
-      const navLink = document.getElementById('nav-' + pageName);
-      if (navLink) navLink.classList.add('active');
-      
-      if (pageName === 'shop') {
-        if (state.mode === 'customer') {
-            document.getElementById('heroSection')?.classList.remove('hidden');
-            renderGrid();
-        } else {
-            document.getElementById('heroSection')?.classList.add('hidden');
-        }
-      } else {
-        document.getElementById('heroSection')?.classList.add('hidden');
-        window.scrollTo(0, 0); 
-      }
-      state.currentPage = pageName;
-    }
-
-    // ==================== COLUMN MAPPING & PARSING ====================
-    const COLUMN_MAP = {
-      name: ['name', 'title', 'item'], sku: ['sku', 'id', 'reference'],
-      price: ['price', 'value', 'cost', 'regular price (usd)', 'regular price'],
-      stock: ['stock', 'qty', 'inventory', 'stock qty'],
-      wpImage1: ['wordpress media url 1', 'wp media url 1'],
-      wpImage2: ['wordpress media url 2', 'wp media url 2'],
-      wpImage3: ['wordpress media url 3', 'wp media url 3'],
-      pattern: ['pattern name', 'pattern'], era: ['era / year made', 'era', 'year made'],
-      origin: ['country of origin', 'origin', 'country']
-    };
-
-    function findColumn(headers, variations) {
-      const cleanedHeaders = headers.map((h, idx) => ({ original: h, cleaned: (h || '').toString().toLowerCase().trim(), index: idx }));
-      for (const variation of variations) {
-        const target = variation.toLowerCase().trim();
-        const match = cleanedHeaders.find(h => h.cleaned === target);
-        if (match) return headers[match.index];
-      }
-      return null;
-    }
-
-    function processImageUrl(url) {
-      if (!url || typeof url !== 'string') return null;
-      let imageUrl = url.split(',')[0].trim();
-      if (!imageUrl || imageUrl === '#REF!' || imageUrl === '') return null;
-      const driveMatch = imageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-      if (driveMatch && driveMatch[1]) return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w800`;
-      if (imageUrl.startsWith('http')) return imageUrl;
-      return null;
-    }
-
-    function getAllProductImages(row, headers) {
-      const uniqueUrls = new Set();
-      const wpColumns = [
-        findColumn(headers, COLUMN_MAP.wpImage1),
-        findColumn(headers, COLUMN_MAP.wpImage2),
-        findColumn(headers, COLUMN_MAP.wpImage3)
-      ];
-      wpColumns.forEach(col => {
-        if (col && row[col]?.toString().trim()) {
-          const url = row[col].trim();
-          if (url && url !== '#REF!' && url.startsWith('http')) {
-            const processed = processImageUrl(url);
-            if (processed) uniqueUrls.add(processed);
-          }
-        }
-      });
-      return Array.from(uniqueUrls);
-    }
-
-    function isDocumentationRow(row) {
-      const patterns = ['WOOCOMMERCE IMPORT', 'STORE MANAGEMENT', 'HOW TO IMPORT', 'IMAGE WORKFLOW'];
-      return Object.values(row).some(value => value && patterns.some(p => value.toString().toUpperCase().includes(p)));
-    }
-    function isEmptyRow(row) { return Object.values(row).every(v => !v || v.toString().trim() === '' || v.toString().trim() === '#REF!'); }
-    function hasValidSKU(row, skuCol) { 
-        if (!skuCol || !row[skuCol]) return false; 
-        const sku = row[skuCol].toString().trim(); 
-        return sku.length > 2; 
-    }
-    
-    function normalizeProduct(row, headers) {
-      const nameCol = findColumn(headers, COLUMN_MAP.name), skuCol = findColumn(headers, COLUMN_MAP.sku);
-      if (!nameCol || !skuCol) return null;
-      const priceCol = findColumn(headers, COLUMN_MAP.price), stockCol = findColumn(headers, COLUMN_MAP.stock);
-      const price = parseFloat((row[priceCol] || '0').toString().replace(/[^0-9.]/g, '')) || 0;
-      const stock = parseInt((row[stockCol] || '0').toString().replace(/[^0-9]/g, '')) || 0;
-      const allImages = getAllProductImages(row, headers);
-      
-      return {
-        name: row[nameCol]?.toString().trim() || 'Untitled Piece', sku: row[skuCol]?.toString().trim(),
-        price: price, priceFormatted: price > 0 ? `$${price.toFixed(2)}` : 'Inquire',
-        image: allImages.length > 0 ? allImages[0] : 'https://images.unsplash.com/photo-1610705126848-18eaf396f4fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        images: allImages, stock: stock, inStock: stock > 0,
-        pattern: row[findColumn(headers, COLUMN_MAP.pattern)]?.toString().trim() || '',
-        era: row[findColumn(headers, COLUMN_MAP.era)]?.toString().trim() || ''
-      };
-    }
-
-    // ==================== FILE UPLOAD ====================
-    async function handleFileUpload(file) {
-      const status = document.getElementById('uploadStatus');
-      status.classList.remove('hidden'); status.textContent = 'Analyzing and curating archive...'; 
-      status.className = 'mt-6 text-sm font-sans bg-gray-50 text-gray-700 px-4 py-3 rounded-lg border border-gray-200';
-      
-      try {
-        const text = await file.text();
-        Papa.parse(text, { header: true, skipEmptyLines: true, complete: (results) => {
-          const headers = Object.keys(results.data[0] || {}), skuCol = findColumn(headers, COLUMN_MAP.sku);
-          const filtered = results.data.filter(row => !isDocumentationRow(row) && !isEmptyRow(row) && hasValidSKU(row, skuCol));
-          const products = filtered.map(row => normalizeProduct(row, headers)).filter(p => p && p.name && p.sku);
-          
-          if (!products.length) { 
-              status.textContent = `Error: Catalog unreadable. Check formatting.`; 
-              status.className = 'mt-6 text-sm font-sans bg-red-50 text-red-700 border-red-200 border px-4 py-3 rounded-lg'; return; 
-          }
-          
-          state.products = products;
-          status.textContent = `Success: Cataloged ${products.length} magnificent pieces.`;
-          status.className = 'mt-6 text-sm font-sans bg-archive-lightGreen text-archive-green border-archive-green/20 border px-4 py-3 rounded-lg';
-          
-          setTimeout(() => { setMode('customer'); }, 1500);
-
-        }, error: (err) => { 
-            status.textContent = `Extraction Error: ${err.message}`; 
-            status.className = 'mt-6 text-sm font-sans bg-red-50 text-red-700 border-red-200 border px-4 py-3 rounded-lg'; 
-        }});
-      } catch (err) { 
-          status.textContent = `System Error: ${err.message}`; 
-          status.className = 'mt-6 text-sm font-sans bg-red-50 text-red-700 border-red-200 border px-4 py-3 rounded-lg'; 
-      }
-    }
-
-    // Load Demo Content
-    function loadDemoContent() {
-        if(state.products.length === 0) {
-            state.products = [
-                {
-                    name: "Royal Crown Derby Imari Plate", sku: "RCD-854-1", price: 145.00, priceFormatted: "$145.00",
-                    image: "https://images.unsplash.com/photo-1576088273614-72fe882fd426?w=600&h=600&fit=crop", images: ["https://images.unsplash.com/photo-1576088273614-72fe882fd426?w=600&h=600&fit=crop", "https://images.unsplash.com/photo-1610705126848-18eaf396f4fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"], stock: 2, inStock: true, pattern: "Imari 1128", era: "1980s"
-                },
-                {
-                    name: "Spode Blue Italian Teacup & Saucer", sku: "SPD-BLU-22", price: 65.00, priceFormatted: "$65.00",
-                    image: "https://images.unsplash.com/photo-1596484552834-6a58f85cbba5?w=600&h=600&fit=crop", images: [], stock: 5, inStock: true, pattern: "Blue Italian", era: "1960s"
-                },
-                {
-                   name: "Wedgwood Jasperware Pedestal Bowl", sku: "WDG-JSP-8", price: 210.00, priceFormatted: "$210.00",
-                    image: "https://images.unsplash.com/photo-1628157731215-649069796e95?w=600&h=600&fit=crop", images: ["https://images.unsplash.com/photo-1628157731215-649069796e95?w=600&h=600&fit=crop", "https://images.unsplash.com/photo-1576088273614-72fe882fd426?w=600&h=600&fit=crop", "https://images.unsplash.com/photo-1596484552834-6a58f85cbba5?w=600&h=600&fit=crop"], stock: 1, inStock: true, pattern: "Pale Blue Classic", era: "1950s"
-                },
-                {
-                    name: "Minton Haddon Hall Salad Plate", sku: "MNT-HH-44", price: 45.00, priceFormatted: "$45.00",
-                    image: "https://images.unsplash.com/photo-1620067667822-475a7c2c019d?w=600&h=600&fit=crop", images: [], stock: 0, inStock: false, pattern: "Haddon Hall", era: "1970s"
-                }
-            ];
-            renderGrid();
-        }
-    }
-
-    // ==================== RENDERING ====================
-    function renderGrid() {
-      const term = state.searchTerm.toLowerCase();
-      const filtered = state.products.filter(p => p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term) || p.pattern?.toLowerCase().includes(term) || p.era?.toLowerCase().includes(term));
-      
-      document.getElementById('productCount').textContent = filtered.length;
-      document.getElementById('emptyState').classList.toggle('hidden', filtered.length > 0);
-      
-      const grid = document.getElementById('productGrid');
-      grid.innerHTML = '';
-      
-      if (filtered.length === 0) return;
-      
-      let delay = 0;
-      grid.innerHTML = filtered.map((p, i) => {
-        const inCart = state.cart[p.sku], qty = inCart ? inCart.quantity : 0;
-        const imageCount = p.images ? p.images.length : 0;
-        
-        let thumbnailsHTML = '';
-        if (imageCount >= 2) {
-          thumbnailsHTML = '<div class="image-thumbnails pl-5">';
-          p.images.forEach((img, idx) => {
-            thumbnailsHTML += `<img src="${img}" class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="changeImage('${img}', '${p.sku}')" alt="Thumbnail">`;
-          });
-          thumbnailsHTML += '</div>';
-        }
-        
-        delay = (i % 4) * 0.1; 
-        
-        return `<div class="product-card fade-in cursor-pointer" data-sku="${p.sku}" style="animation-delay: ${delay}s" onclick="openQuickView('${p.sku}')">
-          <div class="product-image-wrapper">
-            <img src="${p.image}" alt="${p.name}" class="product-main-image" id="main-img-${p.sku}" loading="lazy">
-            ${imageCount >= 2 ? `<div class="tag-count">${imageCount} views</div>` : ''}
-          </div>
-          ${thumbnailsHTML}
-          
-          <div class="p-6 md:p-8 flex flex-col flex-1">
-              <div class="flex justify-between items-start mb-2 gap-4">
-                  <h3 class="font-serif text-2xl mb-1 leading-tight text-archive-text line-clamp-2">${p.name}</h3>
-              </div>
-              
-              <div class="flex gap-2 flex-wrap mb-4">
-                  ${p.pattern ? `<span class="bg-gray-50 border border-gray-100 px-2 py-1 rounded text-[10px] font-sans font-bold uppercase tracking-wider text-archive-green">${p.pattern}</span>` : ''}
-                  ${p.era ? `<span class="bg-gray-50 border border-gray-100 px-2 py-1 rounded text-[10px] font-sans font-bold uppercase tracking-wider text-gray-500">${p.era}</span>` : ''}
-              </div>
-
-              <div class="mt-auto">
-                  <div class="flex justify-between items-center mb-6 pt-4 border-t border-gray-100">
-                    <span class="font-sans font-bold text-xl">${p.priceFormatted}</span>
-                    ${p.inStock ? `<span class="stock-badge stock-in">Curated (${p.stock})</span>` : `<span class="stock-badge stock-out">Archived</span>`}
-                  </div>
-                  <button class="btn-primary ${qty > 0 ? 'in-cart' : ''}" onclick="addToCart('${p.sku}'); event.stopPropagation();" ${!p.inStock ? 'disabled' : ''}>
-                    ${qty > 0 
-                        ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Added to Cart (${qty})` 
-                        : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg> Add to Cart`}
-                  </button>
-              </div>
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    function changeImage(imageUrl, sku) {
-      const mainImg = document.getElementById(`main-img-${sku}`);
-      if (mainImg) { mainImg.style.transform = 'scale(0.98)'; mainImg.style.opacity = '0.5'; setTimeout(() => { mainImg.src = imageUrl; mainImg.style.transform = 'scale(1)'; mainImg.style.opacity = '1'; }, 200); }
-      const card = document.querySelector(`[data-sku="${sku}"]`);
-      if (card) { card.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active')); event.target.classList.add('active'); }
-    }
-
-    function formatNumber(num) { return `$${num.toFixed(2)}`; }
-
-    function renderCart() {
-      const items = Object.values(state.cart);
-      const count = items.reduce((s, i) => s + i.quantity, 0);
-      const total = items.reduce((s, i) => s + (i.product.price * i.quantity), 0);
-      
-      const badge = document.getElementById('cartBadge');
-      badge.textContent = count;
-      badge.classList.toggle('hidden', count === 0);
-      document.getElementById('cartHeaderCount').textContent = `${count} ITEMS SELECTION`;
-      document.getElementById('cartSubtotal').textContent = formatNumber(total);
-      
-      const container = document.getElementById('cartItems');
-      if (items.length === 0) { 
-          container.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
-              <svg class="w-12 h-12 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              <p class="font-sans text-sm uppercase tracking-widest font-bold">Your cart is empty</p>
-          </div>`; 
-          return; 
-      }
-      
-      container.innerHTML = '<div class="space-y-4">' + items.map(i => `
-        <div class="bg-white p-4 rounded-xl border border-archive-border flex gap-4 shadow-sm items-center">
-          <img src="${i.product.image}" class="w-20 h-20 object-cover rounded-lg bg-gray-50 border border-gray-100">
-          <div class="flex-1 pr-2">
-              <p class="font-serif text-lg leading-tight mb-1 text-archive-text line-clamp-2">${i.product.name}</p>
-              <p class="text-[10px] font-sans uppercase tracking-widest text-archive-accent font-bold mb-2">SKU: ${i.product.sku}</p>
-              <div class="flex justify-between items-center">
-                  <span class="font-sans font-bold text-archive-text">${i.product.priceFormatted}</span>
-                  <div class="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-full px-1 py-1">
-                      <button class="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white hover:text-red-500 font-sans shadow-sm transition-colors text-gray-500" onclick="updateCartQty('${i.product.sku}', -1)">−</button>
-                      <span class="w-4 text-center text-xs font-sans font-bold">${i.quantity}</span>
-                      <button class="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white text-archive-green font-sans shadow-sm transition-colors" onclick="updateCartQty('${i.product.sku}', 1)">+</button>
-                  </div>
-              </div>
-          </div>
-        </div>`).join('') + '</div>';
-    }
-
-    // ==================== CART & MODAL ACTIONS ====================
-    function openQuickView(sku) {
-        const product = state.products.find(p => p.sku === sku);
-        if(!product) return;
-        
-        document.getElementById('qvMainImage').src = product.image;
-        document.getElementById('qvTitle').textContent = product.name;
-        document.getElementById('qvPrice').textContent = product.priceFormatted;
-        document.getElementById('qvSku').textContent = product.sku;
-        document.getElementById('qvEra').textContent = product.era || 'Vintage';
-        document.getElementById('qvPattern').textContent = product.pattern || 'Classic Collection';
-        document.getElementById('qvStock').textContent = product.inStock ? `${product.stock} In Stock` : 'Out of Stock';
-        
-        const btn = document.getElementById('qvAddToCartBtn');
-        btn.disabled = !product.inStock;
-        btn.onclick = () => { addToCart(product.sku); };
-        
-        const inCart = state.cart[sku];
-        btn.innerHTML = inCart ? `Added to Cart (${inCart.quantity})` : 'Add To Cart';
-        if(inCart) btn.classList.add('bg-archive-text'); else btn.classList.remove('bg-archive-text');
-        
-        const modal = document.getElementById('quickViewModal');
-        modal.classList.remove('hidden');
-        // trigger animation
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            document.getElementById('quickViewContent').classList.remove('scale-95');
-        }, 10);
-    }
-    
-    function closeQuickView() {
-        const modal = document.getElementById('quickViewModal');
-        modal.classList.add('opacity-0');
-        document.getElementById('quickViewContent').classList.add('scale-95');
-        setTimeout(() => { modal.classList.add('hidden'); }, 300);
-    }
-
-    function addToCart(sku) {
-      const product = state.products.find(p => p.sku === sku);
-      if (!product || !product.inStock) return;
-      if (!state.cart[sku]) state.cart[sku] = { product, quantity: 0 };
-      if (state.cart[sku].quantity >= product.stock) { alert('Archival stock limit reached.'); return; }
-      state.cart[sku].quantity++; 
-      renderCart(); renderGrid(); 
-      openCart();
-      closeQuickView();
-    }
-    function updateCartQty(sku, delta) {
-      if (!state.cart[sku]) return;
-      const newQty = state.cart[sku].quantity + delta;
-      if (newQty <= 0) { delete state.cart[sku]; } else if (newQty <= state.cart[sku].product.stock) { state.cart[sku].quantity = newQty; }
-      renderCart(); renderGrid();
-    }
-    function openCart() { 
-      document.getElementById('cart-tray').classList.add('open');
-      document.getElementById('cartOverlay').classList.add('open');
-      document.body.style.overflow = 'hidden'; 
-    }
-    function closeCart() { 
-      document.getElementById('cart-tray').classList.remove('open');
-      document.getElementById('cartOverlay').classList.remove('open');
-      document.body.style.overflow = '';
-    }
-
-    // ==================== EXPORT SYSTEM ====================
-    function exportManifest() {
-      const items = Object.values(state.cart);
-      if (!items.length) { alert('Selection is empty.'); return; }
-      let content = `THE PLATE ARCHIVE CO. — SELECTION MANIFEST\nGeneration Log: ${new Date().toLocaleString()}\n${'='.repeat(65)}\n\n`;
-      let total = 0;
-      items.forEach(i => { 
-          const lineTotal = i.product.price * i.quantity; total += lineTotal; 
-          content += `[${i.product.sku}] ${i.product.name.toUpperCase()}\n`;
-          content += `Unit: ${i.product.priceFormatted} | Qty: ${i.quantity} | Line Total: $${lineTotal.toFixed(2)}\n`;
-          content += `${'-'.repeat(40)}\n`; 
-      });
-      content += `\nESTIMATED GRAND TOTAL: $${total.toFixed(2)}\n\n`;
-      content += `A Archivist will contact you shortly to confirm provenance and arrange secure shipping.\n`;
-      content += `Thank you for supporting Federation Collectibles.`;
-      
-      const blob = new Blob([content], { type: 'text/plain' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob); 
-      a.download = `PlateArchive_Manifest_${new Date().toISOString().slice(0,10)}.txt`; 
-      a.click();
-    }
-
-    // ==================== MODE SWITCH ====================
-    function setMode(mode) {
-      state.mode = mode;
-      const adminView = document.getElementById('adminView'), customerView = document.getElementById('customerView'), heroSection = document.getElementById('heroSection');
-      
-      if (mode === 'admin') {
-        adminView.classList.remove('hidden'); 
-        customerView.classList.add('hidden');
-        heroSection.classList.add('hidden');
-      } else {
-        adminView.classList.add('hidden'); 
-        if (state.currentPage === 'shop') {
-            customerView.classList.remove('hidden');
-            heroSection.classList.remove('hidden');
-        }
-        renderGrid(); 
-      }
-    }
-
-    // ==================== BINDINGS ====================
-    document.getElementById('csvInput').addEventListener('change', e => { if (e.target.files[0]) handleFileUpload(e.target.files[0]); });
-    document.getElementById('dropZone').addEventListener('click', () => document.getElementById('csvInput').click());
-    document.getElementById('dropZone').addEventListener('dragover', function(e) { e.preventDefault(); this.style.borderColor = '#d4af37'; this.style.backgroundColor = 'rgba(238, 243, 240, 0.9)'; });
-    document.getElementById('dropZone').addEventListener('dragleave', function(e) { e.preventDefault(); this.style.borderColor = 'rgba(44, 76, 59, 0.3)'; this.style.backgroundColor = 'rgba(238, 243, 240, 0.5)'; });
-    document.getElementById('dropZone').addEventListener('drop', function(e) { e.preventDefault(); this.style.borderColor = 'rgba(44, 76, 59, 0.3)'; this.style.backgroundColor = 'rgba(238, 243, 240, 0.5)'; if (e.dataTransfer.files[0]) handleFileUpload(e.dataTransfer.files[0]); });
-    
-    let searchTimeout;
-    document.getElementById('searchInput').addEventListener('input', e => { 
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => { state.searchTerm = e.target.value.trim(); renderGrid(); }, 300);
-    });
-    
-    document.getElementById('toggleCartBtn').addEventListener('click', openCart);
-    document.getElementById('closeCartBtn').addEventListener('click', closeCart);
-    document.getElementById('exportBtn').addEventListener('click', exportManifest);
-    document.getElementById('clearCartBtn').addEventListener('click', () => { state.cart = {}; renderCart(); renderGrid(); closeCart(); });
-    document.getElementById('signOutBtn').addEventListener('click', handleSignOut);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
-
-    // Initialize
-    loadDemoContent(); 
-    setMode('customer'); 
-    showPage('shop');
-    renderCart(); 
-  </script>
+const dz=document.getElementById('dropZone');
+document.getElementById('csvInput').addEventListener('change',e=>{if(e.target.files[0])handleFileUpload(e.target.files[0]);});
+dz.addEventListener('click',()=>document.getElementById('csvInput').click());
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
+dz.addEventListener('dragleave',e=>{e.preventDefault();dz.classList.remove('drag-over');});
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');if(e.dataTransfer.files[0])handleFileUpload(e.dataTransfer.files[0]);});
+let st;
+document.getElementById('searchInput').addEventListener('input',e=>{clearTimeout(st);st=setTimeout(()=>{S.searchTerm=e.target.value.trim();renderGrid();},280);});
+document.getElementById('toggleCartBtn').addEventListener('click',openCart);
+document.getElementById('closeCartBtn').addEventListener('click',closeCart);
+document.getElementById('exportBtn').addEventListener('click',exportManifest);
+document.getElementById('clearCartBtn').addEventListener('click',()=>{S.cart={};renderCart();renderGrid();closeCart();});
+document.getElementById('signOutBtn').addEventListener('click',signOut);
+</script>
 </body>
 </html>
