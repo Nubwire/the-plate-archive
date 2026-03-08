@@ -4,8 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta name="description" content="The Plate Archive Co. - Antique & Vintage Ceramic Plates, Teacups & Collectibles.">
+  <meta name="description" content="The Plate Archive Co. - Antique & Vintage Ceramic Plates, Teacups & Collectibles. Securely curated and shipped worldwide.">
+  <meta name="keywords" content="antique plates, vintage ceramics, teacups, collectibles, federation collectibles, royal crown derby, spode">
+  <meta property="og:title" content="The Plate Archive Co. | Curated Antique Ceramics">
+  <meta property="og:description" content="Discover a meticulously curated collection of rare, antique, and vintage ceramic plates.">
+  <meta property="og:image" content="https://theplatearchive.co/hero.jpg">
+  <meta property="og:url" content="https://theplatearchive.co">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://theplatearchive.co/">
   <title>The Plate Archive Co. - Antique & Vintage Ceramic Plates & Collectibles</title>
+
+  <!-- Generic Organization/WebSite JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "The Plate Archive Co.",
+    "url": "https://theplatearchive.co",
+    "description": "Antique & Vintage Ceramic Plates & Collectibles",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Federation Collectibles Company"
+    }
+  }
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -53,7 +75,7 @@
     
     /* HERO SECTION */
     .hero-bg {
-      background: linear-gradient(rgba(44, 76, 59, 0.8), rgba(44, 76, 59, 0.9)), url('https://images.unsplash.com/photo-1610705126848-18eaf396f4fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover;
+      background: linear-gradient(rgba(44, 76, 59, 0.7), rgba(44, 76, 59, 0.85)), url('./hero.jpg') center/cover;
     }
 
     /* GRID LAYOUT */
@@ -203,7 +225,59 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <div id="googleSignInContainer" class="hidden fixed top-4 right-4 z-[60]"></div>
+  <!-- Login Modal -->
+  <div id="loginModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] hidden flex items-center justify-center transition-opacity">
+    <div class="bg-white p-8 rounded-2xl shadow-premium max-w-sm w-full mx-4 text-center relative">
+      <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-archive-text">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <h3 class="font-serif text-2xl text-archive-green mb-2">Archivist Login</h3>
+      <p class="text-sm font-sans text-gray-500 mb-6">Authenticate to access the inventory management system.</p>
+      <div id="googleSignInContainer" class="flex justify-center mb-4 min-h-[40px]"></div>
+      <p class="text-xs text-gray-400 mt-4 border-t pt-4">Or use emergency override shortcut if authorized.</p>
+    </div>
+  </div>
+
+  <!-- Quick View Modal -->
+  <div id="quickViewModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] hidden flex items-center justify-center transition-opacity opacity-0 mx-auto w-full h-full" onclick="if(event.target===this) closeQuickView()">
+    <div class="bg-white rounded-2xl shadow-premium max-w-5xl w-full mx-4 max-h-[90vh] flex flex-col md:flex-row overflow-hidden relative transform transition-transform scale-95" id="quickViewContent">
+      <button onclick="closeQuickView()" class="absolute top-4 right-4 z-10 bg-white/50 backdrop-blur-md rounded-full p-2 text-gray-500 hover:text-archive-text transition-colors border border-gray-200">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      
+      <!-- Quick View Image Gallery -->
+      <div class="w-full md:w-1/2 bg-gray-50 flex flex-col items-center justify-center min-h-[40vh] md:min-h-full border-r border-archive-border relative">
+        <img id="qvMainImage" src="" class="w-full h-full object-cover absolute inset-0" alt="Product View">
+      </div>
+      
+      <!-- Quick View Details -->
+      <div class="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto z-10 bg-white">
+        <div class="text-[10px] font-sans uppercase tracking-widest text-archive-accent font-bold mb-3 flex items-center gap-2">
+            <span id="qvEra"></span> <span class="w-1 h-1 rounded-full bg-gray-300 inline-block"></span> <span id="qvPattern"></span>
+        </div>
+        <h1 class="font-serif text-3xl md:text-4xl leading-tight text-archive-text mb-4" id="qvTitle">Product Title</h1>
+        <p class="font-sans text-2xl font-bold text-archive-green mb-6" id="qvPrice">$0.00</p>
+        
+        <div class="w-12 h-[1px] bg-archive-accent mb-6"></div>
+        
+        <div class="font-sans text-gray-600 mb-8 space-y-4 text-sm leading-relaxed">
+            <p>This magnificent piece has been preserved in our archive. It displays classical proportions and authentic craftsmanship indicative of its era. All pieces are thoroughly vetted for authenticity and structural integrity by our expert curators.</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-y-4 text-xs font-sans text-gray-500 mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <div><strong class="block text-gray-400 uppercase tracking-wide text-[9px] mb-1">SKU</strong> <span class="font-bold text-archive-text" id="qvSku">---</span></div>
+            <div><strong class="block text-gray-400 uppercase tracking-wide text-[9px] mb-1">Availability</strong> <span id="qvStock">---</span></div>
+            <div><strong class="block text-gray-400 uppercase tracking-wide text-[9px] mb-1">Shipping</strong> <span>Worldwide Insured Delivery</span></div>
+            <div><strong class="block text-gray-400 uppercase tracking-wide text-[9px] mb-1">Condition</strong> <span>Excellent Vintage</span></div>
+        </div>
+        
+        <button id="qvAddToCartBtn" class="btn-primary w-full shadow-lg shadow-archive-green/20 py-4 text-sm" onclick="">
+            Add To Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
 
   <!-- Header -->
@@ -220,12 +294,15 @@
 
       <!-- Logo -->
       <div class="flex items-center space-x-4 cursor-pointer group" onclick="showPage('shop')">
-        <div class="logo-badge group-hover:scale-105 transition-transform duration-300">
-          <span class="text-2xl font-serif italic pr-1">P</span>
-        </div>
-        <div class="hidden sm:block">
-          <h1 class="text-2xl font-serif tracking-wide text-archive-green leading-none mb-1">The Plate Archive</h1>
-          <p class="text-[9px] text-archive-accent font-sans uppercase tracking-widest font-bold">A Federation Collectibles Company</p>
+        <img src="./logo.png" alt="The Plate Archive Logo" class="h-16 w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="logo-fallback hidden items-center space-x-4">
+          <div class="logo-badge group-hover:scale-105 transition-transform duration-300">
+            <span class="text-2xl font-serif italic pr-1">P</span>
+          </div>
+          <div class="hidden sm:block">
+            <h1 class="text-2xl font-serif tracking-wide text-archive-green leading-none mb-1">The Plate Archive</h1>
+            <p class="text-[9px] text-archive-accent font-sans uppercase tracking-widest font-bold">A Federation Collectibles Company</p>
+          </div>
         </div>
       </div>
 
@@ -238,7 +315,7 @@
 
       <!-- Right Actions -->
       <div class="flex items-center space-x-6">
-        <button id="googleSignInBtn" class="hidden md:flex items-center gap-2 text-xs font-sans text-gray-500 hover:text-archive-text transition-colors">
+        <button id="adminLoginBtn" onclick="document.getElementById('loginModal').classList.remove('hidden')" class="hidden md:flex items-center gap-2 text-xs font-sans text-gray-500 hover:text-archive-text transition-colors">
           <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Admin
         </button>
         <button id="toggleCartBtn" class="flex items-center space-x-2 group">
@@ -327,22 +404,33 @@
 
     <section id="shippingPage" class="page-content hidden">
       <h2 class="page-title">Shipping & Authenticity</h2>
-      <div class="page-section text-left">
-        <p>We provide worldwide insured shipping. Our archivists carefully pack each vintage piece utilizing custom foam-in-place technology to guarantee absolute safety during transit.</p>
+      <div class="page-section text-left font-sans text-gray-700 space-y-4">
+        <h3 class="text-xl font-serif text-archive-green mb-2">Global Secure Delivery</h3>
+        <p>We provide fully insured, worldwide shipping for all our curated pieces. Understanding the fragile and irreplaceable nature of antique ceramics, our archivists utilize custom foam-in-place technology, double-boxing, and reinforced structural packing to guarantee absolute safety during transit.</p>
+        <p><strong>Processing Time:</strong> All orders are carefully processed and dispatched from our primary archive within 1-3 business days. You will receive a tracking manifest via email once your acquisition is en route.</p>
+        <p><strong>Authenticity Guarantee:</strong> The Plate Archive Co. unconditionally guarantees the authenticity of every item sold. Each piece is meticulously inspected by our specialists for maker's marks, glaze consistency, crazing patterns, and era-appropriate characteristics before being accepted into the archive.</p>
       </div>
     </section>
 
     <section id="privacyPage" class="page-content hidden">
       <h2 class="page-title">Privacy Policy</h2>
-      <div class="page-section text-left">
-        <p>We honor the privacy of our collectors. Your information is securely vaulted and only used for curation and distribution. We never share our client manifest.</p>
+      <div class="page-section text-left font-sans text-gray-700 space-y-4">
+        <h3 class="text-xl font-serif text-archive-green mb-2">Information Security</h3>
+        <p>The Plate Archive Co. values the privacy and anonymity of our collectors. This Privacy Policy outlines our strict guidelines regarding your personal data.</p>
+        <p><strong>1. Data Collection:</strong> We collect only the information necessary to process your acquisitions, maintain your curation preferences, and communicate shipping details. This includes your name, shipping address, email, and secure payment tokens (which we do not store on our own servers).</p>
+        <p><strong>2. Information Usage:</strong> Your data is used exclusively for internal operations. We do not sell, rent, or distribute our client manifest to any third-party entities. Period.</p>
+        <p><strong>3. Communication:</strong> By providing your email, you consent to receive correspondence regarding your specific inquiries or orders. Marketing communications are strictly opt-in.</p>
       </div>
     </section>
 
     <section id="termsPage" class="page-content hidden">
       <h2 class="page-title">Terms of Service</h2>
-      <div class="page-section text-left">
-        <p>By engaging with The Plate Archive, you are purchasing objects of history. Natural wear on antique items is a testament to age rather than a defect.</p>
+      <div class="page-section text-left font-sans text-gray-700 space-y-4">
+        <h3 class="text-xl font-serif text-archive-green mb-2">Conditions of Acquisition</h3>
+        <p>By engaging with The Plate Archive Co. and acquiring our vintage pieces, you agree to the following conditions:</p>
+        <p><strong>1. Nature of Vintage Goods:</strong> You are purchasing objects of history. Natural wear, minor gilding loss, slight utensil marks, or crazing are testaments to age and use, not defects. We photograph and describe all condition issues to the best of our ability. Perfection should not be expected in wares that have survived a century or more.</p>
+        <p><strong>2. Returns & Refunds:</strong> Due to the logistical risk of transporting fragile antiques, all sales are considered final upon dispatch. Returns are only authorized if an item significantly deviates from its archived description, or is damaged in transit (which must be reported within 48 hours of delivery with photographic evidence of the packaging and item).</p>
+        <p><strong>3. Intellectual Property:</strong> All imagery, text, and curation frameworks on this site are the intellectual property of The Plate Archive Co., a Federation Collectibles Company. Unauthorized reproduction is prohibited.</p>
       </div>
     </section>
 
@@ -352,7 +440,7 @@
   <div id="cart-tray">
     <div class="p-6 md:p-8 border-b border-archive-border flex justify-between items-center bg-white">
       <div>
-        <h3 class="font-serif text-2xl text-archive-green">Your Selection</h3>
+        <h3 class="font-serif text-2xl text-archive-green">Your Cart</h3>
         <p class="text-[10px] font-sans uppercase tracking-widest text-archive-accent mt-1" id="cartHeaderCount">0 Items</p>
       </div>
       <button id="closeCartBtn" class="w-10 h-10 rounded-full border border-archive-border flex items-center justify-center hover:bg-archive-bg transition-colors text-gray-500 hover:text-archive-text">
@@ -369,9 +457,9 @@
       </div>
       
       <button id="exportBtn" class="btn-primary py-4 text-base shadow-lg shadow-archive-green/20">
-        Generate Manifest
+        Proceed to Checkout
       </button>
-      <button id="clearCartBtn" class="w-full mt-4 text-[10px] uppercase tracking-widest font-bold text-gray-400 hover:text-red-600 transition-colors py-2">Clear Entire Selection</button>
+      <button id="clearCartBtn" class="w-full mt-4 text-[10px] uppercase tracking-widest font-bold text-gray-400 hover:text-red-600 transition-colors py-2">Clear Entire Cart</button>
     </div>
   </div>
 
@@ -411,6 +499,7 @@
     
     function showAdminControls() {
       document.getElementById('modeToggle').classList.remove('hidden');
+      document.getElementById('loginModal').classList.add('hidden');
       setMode('admin');
     }
     
@@ -429,6 +518,7 @@
     window.onload = function() {
       if (window.google && google.accounts) {
         google.accounts.id.initialize({ client_id: '167448372477-itfj4vllgfnj0th6ac445mblhsth8h7n.apps.googleusercontent.com', callback: handleCredentialResponse });
+        google.accounts.id.renderButton(document.getElementById('googleSignInContainer'), { theme: 'outline', size: 'large' });
       }
     };
 
@@ -631,7 +721,7 @@
         
         delay = (i % 4) * 0.1; 
         
-        return `<div class="product-card fade-in" data-sku="${p.sku}" style="animation-delay: ${delay}s">
+        return `<div class="product-card fade-in cursor-pointer" data-sku="${p.sku}" style="animation-delay: ${delay}s" onclick="openQuickView('${p.sku}')">
           <div class="product-image-wrapper">
             <img src="${p.image}" alt="${p.name}" class="product-main-image" id="main-img-${p.sku}" loading="lazy">
             ${imageCount >= 2 ? `<div class="tag-count">${imageCount} views</div>` : ''}
@@ -655,8 +745,8 @@
                   </div>
                   <button class="btn-primary ${qty > 0 ? 'in-cart' : ''}" onclick="addToCart('${p.sku}'); event.stopPropagation();" ${!p.inStock ? 'disabled' : ''}>
                     ${qty > 0 
-                        ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Manifested (${qty})` 
-                        : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg> Add to Manifest`}
+                        ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Added to Cart (${qty})` 
+                        : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg> Add to Cart`}
                   </button>
               </div>
           </div>
@@ -688,7 +778,7 @@
       if (items.length === 0) { 
           container.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
               <svg class="w-12 h-12 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              <p class="font-sans text-sm uppercase tracking-widest font-bold">Your manifest is empty</p>
+              <p class="font-sans text-sm uppercase tracking-widest font-bold">Your cart is empty</p>
           </div>`; 
           return; 
       }
@@ -711,14 +801,52 @@
         </div>`).join('') + '</div>';
     }
 
-    // ==================== CART ACTIONS ====================
+    // ==================== CART & MODAL ACTIONS ====================
+    function openQuickView(sku) {
+        const product = state.products.find(p => p.sku === sku);
+        if(!product) return;
+        
+        document.getElementById('qvMainImage').src = product.image;
+        document.getElementById('qvTitle').textContent = product.name;
+        document.getElementById('qvPrice').textContent = product.priceFormatted;
+        document.getElementById('qvSku').textContent = product.sku;
+        document.getElementById('qvEra').textContent = product.era || 'Vintage';
+        document.getElementById('qvPattern').textContent = product.pattern || 'Classic Collection';
+        document.getElementById('qvStock').textContent = product.inStock ? `${product.stock} In Stock` : 'Out of Stock';
+        
+        const btn = document.getElementById('qvAddToCartBtn');
+        btn.disabled = !product.inStock;
+        btn.onclick = () => { addToCart(product.sku); };
+        
+        const inCart = state.cart[sku];
+        btn.innerHTML = inCart ? `Added to Cart (${inCart.quantity})` : 'Add To Cart';
+        if(inCart) btn.classList.add('bg-archive-text'); else btn.classList.remove('bg-archive-text');
+        
+        const modal = document.getElementById('quickViewModal');
+        modal.classList.remove('hidden');
+        // trigger animation
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            document.getElementById('quickViewContent').classList.remove('scale-95');
+        }, 10);
+    }
+    
+    function closeQuickView() {
+        const modal = document.getElementById('quickViewModal');
+        modal.classList.add('opacity-0');
+        document.getElementById('quickViewContent').classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
     function addToCart(sku) {
       const product = state.products.find(p => p.sku === sku);
       if (!product || !product.inStock) return;
       if (!state.cart[sku]) state.cart[sku] = { product, quantity: 0 };
       if (state.cart[sku].quantity >= product.stock) { alert('Archival stock limit reached.'); return; }
       state.cart[sku].quantity++; 
-      renderCart(); renderGrid(); openCart();
+      renderCart(); renderGrid(); 
+      openCart();
+      closeQuickView();
     }
     function updateCartQty(sku, delta) {
       if (!state.cart[sku]) return;
@@ -797,7 +925,6 @@
     document.getElementById('exportBtn').addEventListener('click', exportManifest);
     document.getElementById('clearCartBtn').addEventListener('click', () => { state.cart = {}; renderCart(); renderGrid(); closeCart(); });
     document.getElementById('signOutBtn').addEventListener('click', handleSignOut);
-    document.getElementById('googleSignInBtn').addEventListener('click', () => { if (window.google && google.accounts.id) google.accounts.id.prompt(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
 
     // Initialize
@@ -808,3 +935,4 @@
   </script>
 </body>
 </html>
+
